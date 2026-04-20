@@ -1,0 +1,10 @@
+{
+  "name": "carroeletricoxcombustao.com.br",
+  "short_name": "Carro EV x ICE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "lang": "pt-BR",
+  "description": "Simulador de custo total de propriedade para comparar carro elétrico e carro a combustão."
+}
