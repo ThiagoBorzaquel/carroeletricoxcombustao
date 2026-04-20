@@ -267,6 +267,59 @@ fieldset {
 }
 
 @media (max-width: 640px) {
+  body {
+    font-size: 15px;
+  }
+
+  header .mx-auto {
+    align-items: stretch;
+  }
+
+  #themeToggle,
+  #loadDemoBtn,
+  #resetBtn,
+  #tcoForm button[type="submit"] {
+    width: 100%;
+  }
+
+  #mainContent {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .guide-step {
+    padding: 0.8rem 0.9rem;
+  }
+
+  .input-group small {
+    font-size: 0.76rem;
+  }
+
+  .input-group input,
+  .input-group select {
+    padding: 0.85rem 0.9rem;
+  }
+
+  .fipe-card,
+  .chart-panel,
+  .kpi-card {
+    border-radius: 1.15rem;
+  }
+
+  .fipe-card,
+  .chart-panel {
+    padding: 0.9rem;
+  }
+
+  #summaryTableBody td,
+  thead th {
+    padding: 0.8rem 0.7rem;
+  }
+
+  table.min-w-\[480px\] {
+    min-width: 360px !important;
+  }
+
   .kpi-card strong {
     font-size: 1.2rem;
   }
@@ -277,5 +330,25 @@ fieldset {
 
   .chart-wrap-sm {
     min-height: 13rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .panel-title,
+  .font-display.text-xl,
+  .font-display.text-2xl {
+    line-height: 1.15;
+  }
+
+  table.min-w-\[480px\] {
+    min-width: 320px !important;
+  }
+
+  .chart-wrap {
+    min-height: 12.5rem;
+  }
+
+  .chart-wrap-sm {
+    min-height: 11.5rem;
   }
 }
