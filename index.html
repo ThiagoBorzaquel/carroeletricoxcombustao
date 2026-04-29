@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Simulador TCO</title>
 
 <link rel="stylesheet" href="style.css">
@@ -14,11 +15,13 @@
 <div class="app-container">
 
   <!-- HEADER -->
+
   <header class="header">
     <h1>Simulador</h1>
   </header>
 
   <!-- KPI -->
+
   <section class="kpi">
     <div class="card center">
       <p>Economia</p>
@@ -27,6 +30,7 @@
   </section>
 
   <!-- NAV -->
+
   <nav class="nav">
     <button class="active" onclick="tab('dados', this)">Dados</button>
     <button onclick="tab('resultado', this)">Resultado</button>
@@ -34,59 +38,73 @@
   </nav>
 
   <!-- DADOS -->
+
   <section id="dados" class="tab active">
 
-    <div class="card">
+```
+<div class="card">
 
-      <input placeholder="Preço elétrico" name="evPrice">
-      <input placeholder="Preço combustão" name="icePrice">
+  <input placeholder="Preço elétrico" name="evPrice">
+  <input placeholder="Preço combustão" name="icePrice">
 
-      <div class="row">
-        <input placeholder="Km/ano" name="annualKm">
-        <input placeholder="Combustível" name="fuelPrice">
-      </div>
+  <div class="row">
+    <input placeholder="Km/ano" name="annualKm">
+    <input placeholder="Combustível" name="fuelPrice">
+  </div>
 
-      <div class="row">
-        <input placeholder="Energia" name="energyPrice">
-        <input placeholder="IPVA %" name="ipva">
-      </div>
+  <div class="row">
+    <input placeholder="Energia" name="energyPrice">
+    <input placeholder="IPVA %" name="ipva">
+  </div>
 
-    </div>
+</div>
 
-    <button class="btn">Calcular</button>
+<button class="btn">Calcular</button>
+```
 
   </section>
 
   <!-- RESULTADO -->
+
   <section id="resultado" class="tab">
 
-    <div class="card">
-      <p>Payback</p>
-      <h3 id="kpiPayback">-</h3>
-    </div>
+```
+<div class="card">
+  <p>Payback</p>
+  <h3 id="kpiPayback">-</h3>
+</div>
 
-    <div class="card">
-      <p>Break-even</p>
-      <h3 id="kpiBreakEven">-</h3>
-    </div>
+<div class="card">
+  <p>Break-even</p>
+  <h3 id="kpiBreakEven">-</h3>
+</div>
 
-    <div class="card">
-      <p>ROI</p>
-      <h3 id="kpiRoi">0%</h3>
-    </div>
+<div class="card">
+  <p>ROI</p>
+  <h3 id="kpiRoi">0%</h3>
+</div>
+```
 
   </section>
 
   <!-- GRÁFICOS -->
+
   <section id="graficos" class="tab">
 
-    <div class="card">
-      <canvas id="costEvolutionChart" class="chart"></canvas>
-    </div>
+```
+<div class="card">
+  <!-- chart-wrapper: obrigatório para Chart.js ser responsivo -->
+  <div class="chart-wrapper">
+    <canvas id="costEvolutionChart"></canvas>
+  </div>
+</div>
 
-    <div class="card">
-      <canvas id="breakEvenChart" class="chart"></canvas>
-    </div>
+<div class="card">
+  <div class="chart-wrapper">
+    <canvas id="breakEvenChart"></canvas>
+  </div>
+</div>
+```
 
   </section>
 
@@ -94,11 +112,11 @@
 
 <script>
 function tab(id, el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'))
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
 
-  document.getElementById(id).classList.add('active')
-  el.classList.add('active')
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
 }
 </script>
 
