@@ -1,146 +1,62 @@
 /* RESET */
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
 }
 
-/* BASE */
 html, body {
   margin: 0;
   padding: 0;
-
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-
   background: #0b1220;
   color: #e7edf7;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 
-  font-family: -apple-system, BlinkMacSystemFont, "Manrope", sans-serif;
+  /* 🔥 CORREÇÃO CRÍTICA DO IPHONE */
+  overflow-x: hidden;
 }
 
-/* APP */
-.app-container {
+/* APP CENTRALIZADO */
+.app {
   display: flex;
-  justify-content: center;
-  width: 100%;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* WRAPPER (PADRÃO DOS CARDS) */
-.content-wrapper {
+/* CONTEÚDO REAL */
+.content {
   width: 100%;
-  max-width: 360px; /* MESMA LARGURA DOS GRÁFICOS */
-  padding: 6px;
-}
-
-/* DESKTOP */
-@media (min-width: 768px) {
-  .content-wrapper {
-    max-width: 1100px;
-  }
+  max-width: 360px; /* 🔥 largura padrão do app */
 }
 
 /* HEADER */
 .header {
-  position: sticky;
-  top: 0;
-  background: #0b1220;
-  padding: 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-.header h1 {
-  font-size: 13px;
+  width: 100%;
+  max-width: 360px;
+  padding: 8px;
 }
 
 /* KPI */
 .kpi {
-  position: sticky;
-  top: 36px;
-  padding: 4px 0;
+  width: 100%;
+  max-width: 360px;
+  padding: 6px;
 }
 
 .center {
   text-align: center;
 }
 
-.kpi h2 {
-  font-size: 14px;
-}
-
-/* CARD */
-.card {
-  width: 100%;
-  background: #121a2b;
-  border-radius: 10px;
-  padding: 6px;
-  margin-bottom: 6px;
-}
-
-/* INPUT */
-input, select {
-  width: 100%;
-  min-width: 0;
-
-  height: 32px;
-
-  background: #1a2235;
-  color: #fff;
-
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
-
-  padding: 3px 6px;
-  font-size: 13px;
-
-  margin-bottom: 4px;
-
-  outline: none;
-
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-/* PLACEHOLDER */
-::placeholder {
-  color: #7f8ea3;
-}
-
-/* FLEX */
-.row {
-  display: flex;
-  gap: 4px;
-}
-
-.row > * {
-  flex: 1;
-  min-width: 0;
-}
-
-/* BOTÃO */
-.btn {
-  width: 100%;
-  background: #19c37d;
-  color: #000;
-
-  padding: 6px;
-  border-radius: 8px;
-
-  font-size: 12px;
-  border: none;
-}
-
 /* NAV */
 .nav {
+  width: 100%;
+  max-width: 360px;
   display: flex;
 }
 
 .nav button {
   flex: 1;
   padding: 6px;
-  font-size: 11px;
-  opacity: 0.5;
+  font-size: 12px;
+  opacity: .5;
   background: none;
   border: none;
   color: white;
@@ -151,10 +67,56 @@ input, select {
   border-bottom: 2px solid #19c37d;
 }
 
+/* CARD */
+.card {
+  width: 100%;
+  background: #121a2b;
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 6px;
+}
+
+/* INPUT */
+input {
+  width: 100%;
+  height: 32px;
+  margin-bottom: 4px;
+
+  background: #1a2235;
+  color: white;
+
+  border: none;
+  border-radius: 6px;
+  padding: 4px;
+
+  font-size: 13px;
+}
+
+/* ROW */
+.row {
+  display: flex;
+  gap: 4px;
+}
+
+.row input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* BOTÃO */
+.btn {
+  width: 100%;
+  max-width: 360px;
+  padding: 6px;
+  background: #19c37d;
+  color: black;
+  border-radius: 6px;
+  border: none;
+}
+
 /* TABS */
 .tab {
   display: none;
-  padding-top: 4px;
 }
 
 .tab.active {
@@ -162,18 +124,25 @@ input, select {
 }
 
 /* CHART */
-.chart-wrapper {
+.chart {
   width: 100%;
-  height: 120px;
-  position: relative;
+  height: 140px;
 }
 
-.chart-wrapper canvas {
+.chart canvas {
   width: 100% !important;
   height: 100% !important;
 }
 
-/* GARANTIA */
-section, div, form {
-  max-width: 100%;
+/* DESKTOP */
+@media (min-width: 768px) {
+
+  .content,
+  .header,
+  .kpi,
+  .nav,
+  .btn {
+    max-width: 1000px;
+  }
+
 }
