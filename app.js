@@ -298,4 +298,10 @@ function syncThemeButton() {
   themeToggle.setAttribute("aria-pressed", String(isLight));
 }
 
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  resizeDelay: 200
+};
+
 bootstrap();
