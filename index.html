@@ -12,52 +12,66 @@ body {
   background:#0b1220;
   font-family: Manrope, sans-serif;
   color:white;
+  font-size:13px;
 }
 
-/* HEADER FIXO */
+/* HEADER */
 .header {
   position: sticky;
   top: 0;
   z-index: 50;
   background:#0b1220;
-  padding:12px;
+  padding:8px 12px;
   border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
-/* KPI FIXO */
+/* KPI */
 .kpi {
   position: sticky;
-  top: 56px;
+  top: 44px;
   z-index: 40;
-  padding:10px;
+  padding:8px;
 }
 
+.kpi h2 {
+  font-size:16px;
+}
+
+/* CARDS */
 .card {
   background:#121a2b;
-  border-radius:14px;
-  padding:12px;
-}
-
-.input {
-  width:100%;
-  height:40px;
-  background:#1a2235;
   border-radius:10px;
   padding:8px;
-  font-size:16px;
+}
+
+/* INPUT */
+.input {
+  width:100%;
+  height:34px;
+  background:#1a2235;
+  border-radius:8px;
+  padding:4px 8px;
+  font-size:14px;
+  margin-bottom:4px;
+}
+
+/* BOTÃO */
+.btn {
+  padding:6px;
+  font-size:13px;
+  border-radius:8px;
 }
 
 /* NAV */
 .nav {
   display:flex;
-  justify-content:space-around;
   border-bottom:1px solid rgba(255,255,255,0.1);
 }
 
 .nav button {
   flex:1;
-  padding:10px;
-  font-size:14px;
+  padding:8px;
+  font-size:12px;
   opacity:.6;
 }
 
@@ -69,16 +83,52 @@ body {
 /* TABS */
 .tab {
   display:none;
-  padding:12px;
+  padding:8px;
 }
 
 .tab.active {
   display:block;
 }
 
-/* CHART SIZE */
+/* CHART */
 .chart {
-  height:180px;
+  height:140px;
+}
+
+/* DESKTOP */
+@media (min-width:1024px){
+
+  .nav { display:none; }
+
+  .tab {
+    display:block !important;
+  }
+
+  body {
+    display:grid;
+    grid-template-columns:380px 1fr;
+    gap:16px;
+    max-width:1300px;
+    margin:auto;
+  }
+
+  .header, .kpi {
+    grid-column:1/-1;
+    position:relative;
+  }
+
+  #dados { grid-column:1; }
+  #resultado, #graficos { grid-column:2; }
+
+  #graficos {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .chart {
+    height:220px;
+  }
 }
 </style>
 </head>
@@ -87,14 +137,14 @@ body {
 
 <!-- HEADER -->
 <div class="header">
-  <h1 class="text-lg font-bold">Simulador</h1>
+  <h1 class="text-sm font-bold">Simulador</h1>
 </div>
 
-<!-- KPI FIXO -->
+<!-- KPI -->
 <div class="kpi">
   <div class="card text-center">
-    <p class="text-xs text-gray-400">Economia</p>
-    <h2 id="kpiSavings" class="text-xl font-bold">R$ 0</h2>
+    <p class="text-[10px] text-gray-400">Economia</p>
+    <h2 id="kpiSavings">R$ 0</h2>
   </div>
 </div>
 
@@ -106,49 +156,59 @@ body {
 </div>
 
 <!-- DADOS -->
-<div id="dados" class="tab active space-y-3">
+<div id="dados" class="tab active">
 
-  <div class="card space-y-2">
+  <div class="card">
+
     <input class="input" placeholder="Preço elétrico" name="evPrice">
     <input class="input" placeholder="Preço combustão" name="icePrice">
-    <input class="input" placeholder="Km por ano" name="annualKm">
-    <input class="input" placeholder="Preço combustível" name="fuelPrice">
+
+    <div style="display:flex; gap:4px;">
+      <input class="input" placeholder="Km/ano" name="annualKm">
+      <input class="input" placeholder="Combustível" name="fuelPrice">
+    </div>
+
+    <div style="display:flex; gap:4px;">
+      <input class="input" placeholder="Energia" name="energyPrice">
+      <input class="input" placeholder="IPVA %" name="ipva">
+    </div>
+
   </div>
 
-  <button class="bg-green-500 text-black w-full py-2 rounded-lg">
+  <button class="btn bg-green-500 text-black w-full mt-2">
     Calcular
   </button>
 
 </div>
 
 <!-- RESULTADO -->
-<div id="resultado" class="tab space-y-3">
+<div id="resultado" class="tab">
 
   <div class="card">
-    <p class="text-xs text-gray-400">Payback</p>
+    <p class="text-[10px] text-gray-400">Payback</p>
     <h3 id="kpiPayback">-</h3>
   </div>
 
-  <div class="card">
-    <p class="text-xs text-gray-400">Break-even</p>
+  <div class="card mt-2">
+    <p class="text-[10px] text-gray-400">Break-even</p>
     <h3 id="kpiBreakEven">-</h3>
   </div>
 
-  <div class="card">
-    <p class="text-xs text-gray-400">ROI</p>
+  <div class="card mt-2">
+    <p class="text-[10px] text-gray-400">ROI</p>
     <h3 id="kpiRoi">0%</h3>
   </div>
 
 </div>
 
 <!-- GRÁFICOS -->
-<div id="graficos" class="tab space-y-3">
+<div id="graficos" class="tab">
 
   <div class="card">
     <canvas id="costEvolutionChart" class="chart"></canvas>
   </div>
 
-  <div class="card">
+  <div class="card mt-2">
     <canvas id="breakEvenChart" class="chart"></canvas>
   </div>
 
@@ -164,6 +224,7 @@ function tab(id, el){
 }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="app.js"></script>
 
 </body>
