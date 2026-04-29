@@ -298,10 +298,19 @@ function syncThemeButton() {
   themeToggle.setAttribute("aria-pressed", String(isLight));
 }
 
-const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: false,
-  resizeDelay: 200
+// Scroll automático para resultado (mobile UX)
+function scrollToResults() {
+  const summary = document.querySelector("#summaryTableBody");
+  if (window.innerWidth < 768 && summary) {
+    summary.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+// Hook no cálculo
+const originalRun = runCalculation;
+runCalculation = function () {
+  originalRun();
+  scrollToResults();
 };
 
 bootstrap();
