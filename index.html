@@ -3,181 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carro Elétrico x Combustão | Simulador</title>
+  <title>Simulador TCO</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            slatebase: "#0b1220",
-            card: "#121a2b",
-            accent: "#19c37d"
-          }
-        }
-      }
-    };
-  </script>
+  <style>
+    body {
+      background: #0b1220;
+      font-family: Manrope, sans-serif;
+    }
 
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    .card {
+      background: #121a2b;
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .input {
+      width: 100%;
+      height: 42px;
+      background: #1a2235;
+      border-radius: 10px;
+      padding: 8px;
+      color: white;
+      font-size: 16px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+  </style>
 </head>
 
-<body class="bg-slatebase text-white">
+<body class="text-white">
 
-<header class="border-b border-white/10">
-  <div class="mx-auto max-w-7xl px-4 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-    <div>
-      <h1 class="text-xl sm:text-2xl font-bold">Carro Elétrico x Combustão</h1>
-    </div>
-
-    <button id="themeToggle" class="bg-white/10 px-3 py-2 rounded-lg text-sm w-full sm:w-auto">
-      Alternar tema
-    </button>
-  </div>
+<!-- HEADER FIXO -->
+<header class="sticky top-0 z-50 bg-[#0b1220] border-b border-white/10 p-3">
+  <h1 class="text-lg font-bold">Simulador</h1>
 </header>
 
-<main class="max-w-7xl mx-auto px-4 py-6">
+<!-- KPI FIXO -->
+<div class="p-3">
+  <div class="card text-center">
+    <p class="text-xs text-gray-400">Economia em 10 anos</p>
+    <h2 id="kpiSavings" class="text-2xl font-bold">R$ 0</h2>
+  </div>
+</div>
 
-  <!-- GRID PRINCIPAL -->
-  <section class="grid gap-4 lg:grid-cols-2">
+<!-- NAV -->
+<div class="flex justify-around text-sm border-b border-white/10 pb-2">
+  <button onclick="showTab('form')">Dados</button>
+  <button onclick="showTab('result')">Resultado</button>
+  <button onclick="showTab('charts')">Gráficos</button>
+</div>
 
-    <!-- FORM -->
-    <section class="bg-white/5 p-4 rounded-xl">
+<main class="p-3 space-y-4">
 
-      <h2 class="text-lg font-bold mb-4">Simulação</h2>
+  <!-- FORM -->
+  <section id="form" class="section active space-y-3">
 
-      <form id="tcoForm" class="space-y-5">
+    <div class="card space-y-3">
+      <h3 class="text-sm text-gray-400">Dados principais</h3>
 
-        <div class="grid gap-3 sm:grid-cols-2">
+      <input class="input" type="number" name="evPrice" placeholder="Preço elétrico">
+      <input class="input" type="number" name="icePrice" placeholder="Preço combustão">
+      <input class="input" type="number" name="annualKm" placeholder="Km por ano">
 
-          <label class="input-group">
-            <span>Preço elétrico</span>
-            <input type="number" name="evPrice" value="220000">
-          </label>
+      <button class="bg-green-500 text-black w-full py-2 rounded-lg">
+        Calcular
+      </button>
+    </div>
 
-          <label class="input-group">
-            <span>Preço combustão</span>
-            <input type="number" name="icePrice" value="145000">
-          </label>
+  </section>
 
-          <label class="input-group">
-            <span>Km/ano</span>
-            <input type="number" name="annualKm" value="18000">
-          </label>
+  <!-- RESULTADO -->
+  <section id="result" class="section space-y-3">
 
-          <label class="input-group">
-            <span>Preço energia</span>
-            <input type="number" name="energyPrice" value="0.95">
-          </label>
+    <div class="card">
+      <p class="text-sm text-gray-400">Payback</p>
+      <h3 id="kpiPayback" class="text-lg font-bold">-</h3>
+    </div>
 
-          <label class="input-group">
-            <span>Preço combustível</span>
-            <input type="number" name="fuelPrice" value="5.89">
-          </label>
+    <div class="card">
+      <p class="text-sm text-gray-400">Break-even</p>
+      <h3 id="kpiBreakEven">-</h3>
+    </div>
 
-          <label class="input-group">
-            <span>Estado</span>
-            <select name="state"></select>
-          </label>
-
-        </div>
-
-        <button type="submit" class="bg-accent text-black font-semibold">
-          Calcular
-        </button>
-
-      </form>
-    </section>
-
-    <!-- RESULTADOS -->
-    <aside class="space-y-4">
-
-      <!-- KPIs -->
-      <section class="bg-card p-4 rounded-xl">
-        <h3 class="text-sm text-gray-400 mb-3">Resumo</h3>
-
-        <div class="responsive-grid">
-
-          <div class="kpi-card">
-            <span>Economia</span>
-            <strong id="kpiSavings">R$ 0</strong>
-          </div>
-
-          <div class="kpi-card">
-            <span>Payback</span>
-            <strong id="kpiPayback">-</strong>
-          </div>
-
-          <div class="kpi-card">
-            <span>Break-even</span>
-            <strong id="kpiBreakEven">-</strong>
-          </div>
-
-          <div class="kpi-card">
-            <span>ROI</span>
-            <strong id="kpiRoi">0%</strong>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- TABELA -->
-      <section class="bg-card p-4 rounded-xl">
-
-        <h3 class="text-sm text-gray-400 mb-3">Horizontes</h3>
-
-        <div class="table-scroll-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Período</th>
-                <th>EV</th>
-                <th>ICE</th>
-                <th>Dif</th>
-              </tr>
-            </thead>
-            <tbody id="summaryTableBody"></tbody>
-          </table>
-        </div>
-
-      </section>
-
-      <!-- VEREDITO -->
-      <section class="bg-card p-4 rounded-xl">
-        <h3 class="text-sm text-gray-400 mb-2">Veredito</h3>
-        <p id="verdictHeadline" class="font-bold">Calculando...</p>
-        <p id="verdictBody" class="text-sm text-gray-400"></p>
-      </section>
-
-    </aside>
+    <div class="card">
+      <p class="text-sm text-gray-400">ROI</p>
+      <h3 id="kpiRoi">0%</h3>
+    </div>
 
   </section>
 
   <!-- CHARTS -->
-  <section class="mt-6 space-y-4">
+  <section id="charts" class="section space-y-3">
 
-    <div class="bg-card p-4 rounded-xl">
-      <h3 class="text-sm mb-2">Evolução</h3>
-      <div class="chart-wrap">
-        <canvas id="costEvolutionChart"></canvas>
-      </div>
+    <div class="card">
+      <canvas id="costEvolutionChart"></canvas>
     </div>
 
-    <div class="bg-card p-4 rounded-xl">
-      <h3 class="text-sm mb-2">Break-even</h3>
-      <div class="chart-wrap-sm">
-        <canvas id="breakEvenChart"></canvas>
-      </div>
+    <div class="card">
+      <canvas id="breakEvenChart"></canvas>
     </div>
 
   </section>
 
 </main>
+
+<script>
+function showTab(tab) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
+}
+</script>
 
 <script type="module" src="app.js"></script>
 
