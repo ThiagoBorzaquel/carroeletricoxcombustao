@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador TCO</title>
+<title>Simulador</title>
 
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,104 +11,82 @@
 
 <body>
 
-<div class="app-container">
+<div class="app">
 
-  <div class="content-wrapper">
+  <header class="header">
+    <h1>Simulador</h1>
+  </header>
 
-    <!-- HEADER -->
-    <header class="header">
-      <h1>Simulador</h1>
-    </header>
+  <section class="kpi">
+    <div class="card center">
+      <small>Economia</small>
+      <h2 id="kpiSavings">R$ 0</h2>
+    </div>
+  </section>
 
-    <!-- KPI -->
-    <section class="kpi">
-      <div class="card center">
-        <p>Economia</p>
-        <h2 id="kpiSavings">R$ 0</h2>
-      </div>
-    </section>
+  <nav class="nav">
+    <button class="active" onclick="tab('dados', this)">Dados</button>
+    <button onclick="tab('resultado', this)">Resultado</button>
+    <button onclick="tab('graficos', this)">Gráficos</button>
+  </nav>
 
-    <!-- NAV -->
-    <nav class="nav">
-      <button class="active" onclick="tab('dados', this)">Dados</button>
-      <button onclick="tab('resultado', this)">Resultado</button>
-      <button onclick="tab('graficos', this)">Gráficos</button>
-    </nav>
+  <main class="content">
 
     <!-- DADOS -->
     <section id="dados" class="tab active">
-
       <div class="card">
-        <input placeholder="Preço elétrico" name="evPrice">
-        <input placeholder="Preço combustão" name="icePrice">
+        <input placeholder="Preço elétrico">
+        <input placeholder="Preço combustão">
 
         <div class="row">
-          <input placeholder="Km/ano" name="annualKm">
-          <input placeholder="Combustível" name="fuelPrice">
+          <input placeholder="Km/ano">
+          <input placeholder="Combustível">
         </div>
 
         <div class="row">
-          <input placeholder="Energia" name="energyPrice">
-          <input placeholder="IPVA %" name="ipva">
+          <input placeholder="Energia">
+          <input placeholder="IPVA %">
         </div>
       </div>
 
       <button class="btn">Calcular</button>
-
     </section>
 
     <!-- RESULTADO -->
     <section id="resultado" class="tab">
-
-      <div class="card">
-        <p>Payback</p>
-        <h3 id="kpiPayback">-</h3>
-      </div>
-
-      <div class="card">
-        <p>Break-even</p>
-        <h3 id="kpiBreakEven">-</h3>
-      </div>
-
-      <div class="card">
-        <p>ROI</p>
-        <h3 id="kpiRoi">0%</h3>
-      </div>
-
+      <div class="card"><p>Payback</p><h3>-</h3></div>
+      <div class="card"><p>Break-even</p><h3>-</h3></div>
+      <div class="card"><p>ROI</p><h3>0%</h3></div>
     </section>
 
     <!-- GRÁFICOS -->
     <section id="graficos" class="tab">
-
       <div class="card">
-        <div class="chart-wrapper">
+        <div class="chart">
           <canvas id="costEvolutionChart"></canvas>
         </div>
       </div>
 
       <div class="card">
-        <div class="chart-wrapper">
+        <div class="chart">
           <canvas id="breakEvenChart"></canvas>
         </div>
       </div>
-
     </section>
 
-  </div>
+  </main>
 
 </div>
 
 <script>
 function tab(id, el){
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'))
 
-  document.getElementById(id).classList.add('active');
-  el.classList.add('active');
+  document.getElementById(id).classList.add('active')
+  el.classList.add('active')
 }
 </script>
-
-<script type="module" src="app.js"></script>
 
 </body>
 </html>
