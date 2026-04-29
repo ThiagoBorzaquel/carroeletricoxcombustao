@@ -30,6 +30,7 @@ export function createCharts(contexts) {
   };
 }
 
+
 export function updateCharts(charts, payload) {
   const labels = payload.yearlySeries.map((point) => `Ano ${point.year}`);
 
@@ -95,3 +96,9 @@ function createDoughnutChart(canvas) {
     }
   });
 }
+
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  resizeDelay: 200
+};
