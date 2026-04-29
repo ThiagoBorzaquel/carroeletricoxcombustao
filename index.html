@@ -1,124 +1,166 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador TCO</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador TCO</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <style>
-    body {
-      background: #0b1220;
-      font-family: Manrope, sans-serif;
-    }
+<style>
+body {
+  background:#0b1220;
+  font-family: Manrope, sans-serif;
+  color:white;
+}
 
-    .card {
-      background: #121a2b;
-      border-radius: 16px;
-      padding: 14px;
-    }
+/* HEADER FIXO */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background:#0b1220;
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
 
-    .input {
-      width: 100%;
-      height: 42px;
-      background: #1a2235;
-      border-radius: 10px;
-      padding: 8px;
-      color: white;
-      font-size: 16px;
-    }
+/* KPI FIXO */
+.kpi {
+  position: sticky;
+  top: 56px;
+  z-index: 40;
+  padding:10px;
+}
 
-    .section {
-      display: none;
-    }
+.card {
+  background:#121a2b;
+  border-radius:14px;
+  padding:12px;
+}
 
-    .section.active {
-      display: block;
-    }
-  </style>
+.input {
+  width:100%;
+  height:40px;
+  background:#1a2235;
+  border-radius:10px;
+  padding:8px;
+  font-size:16px;
+}
+
+/* NAV */
+.nav {
+  display:flex;
+  justify-content:space-around;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.nav button {
+  flex:1;
+  padding:10px;
+  font-size:14px;
+  opacity:.6;
+}
+
+.nav button.active {
+  opacity:1;
+  border-bottom:2px solid #19c37d;
+}
+
+/* TABS */
+.tab {
+  display:none;
+  padding:12px;
+}
+
+.tab.active {
+  display:block;
+}
+
+/* CHART SIZE */
+.chart {
+  height:180px;
+}
+</style>
 </head>
 
-<body class="text-white">
+<body>
 
-<!-- HEADER FIXO -->
-<header class="sticky top-0 z-50 bg-[#0b1220] border-b border-white/10 p-3">
+<!-- HEADER -->
+<div class="header">
   <h1 class="text-lg font-bold">Simulador</h1>
-</header>
+</div>
 
 <!-- KPI FIXO -->
-<div class="p-3">
+<div class="kpi">
   <div class="card text-center">
-    <p class="text-xs text-gray-400">Economia em 10 anos</p>
-    <h2 id="kpiSavings" class="text-2xl font-bold">R$ 0</h2>
+    <p class="text-xs text-gray-400">Economia</p>
+    <h2 id="kpiSavings" class="text-xl font-bold">R$ 0</h2>
   </div>
 </div>
 
 <!-- NAV -->
-<div class="flex justify-around text-sm border-b border-white/10 pb-2">
-  <button onclick="showTab('form')">Dados</button>
-  <button onclick="showTab('result')">Resultado</button>
-  <button onclick="showTab('charts')">Gráficos</button>
+<div class="nav">
+  <button class="active" onclick="tab('dados', this)">Dados</button>
+  <button onclick="tab('resultado', this)">Resultado</button>
+  <button onclick="tab('graficos', this)">Gráficos</button>
 </div>
 
-<main class="p-3 space-y-4">
+<!-- DADOS -->
+<div id="dados" class="tab active space-y-3">
 
-  <!-- FORM -->
-  <section id="form" class="section active space-y-3">
+  <div class="card space-y-2">
+    <input class="input" placeholder="Preço elétrico" name="evPrice">
+    <input class="input" placeholder="Preço combustão" name="icePrice">
+    <input class="input" placeholder="Km por ano" name="annualKm">
+    <input class="input" placeholder="Preço combustível" name="fuelPrice">
+  </div>
 
-    <div class="card space-y-3">
-      <h3 class="text-sm text-gray-400">Dados principais</h3>
+  <button class="bg-green-500 text-black w-full py-2 rounded-lg">
+    Calcular
+  </button>
 
-      <input class="input" type="number" name="evPrice" placeholder="Preço elétrico">
-      <input class="input" type="number" name="icePrice" placeholder="Preço combustão">
-      <input class="input" type="number" name="annualKm" placeholder="Km por ano">
+</div>
 
-      <button class="bg-green-500 text-black w-full py-2 rounded-lg">
-        Calcular
-      </button>
-    </div>
+<!-- RESULTADO -->
+<div id="resultado" class="tab space-y-3">
 
-  </section>
+  <div class="card">
+    <p class="text-xs text-gray-400">Payback</p>
+    <h3 id="kpiPayback">-</h3>
+  </div>
 
-  <!-- RESULTADO -->
-  <section id="result" class="section space-y-3">
+  <div class="card">
+    <p class="text-xs text-gray-400">Break-even</p>
+    <h3 id="kpiBreakEven">-</h3>
+  </div>
 
-    <div class="card">
-      <p class="text-sm text-gray-400">Payback</p>
-      <h3 id="kpiPayback" class="text-lg font-bold">-</h3>
-    </div>
+  <div class="card">
+    <p class="text-xs text-gray-400">ROI</p>
+    <h3 id="kpiRoi">0%</h3>
+  </div>
 
-    <div class="card">
-      <p class="text-sm text-gray-400">Break-even</p>
-      <h3 id="kpiBreakEven">-</h3>
-    </div>
+</div>
 
-    <div class="card">
-      <p class="text-sm text-gray-400">ROI</p>
-      <h3 id="kpiRoi">0%</h3>
-    </div>
+<!-- GRÁFICOS -->
+<div id="graficos" class="tab space-y-3">
 
-  </section>
+  <div class="card">
+    <canvas id="costEvolutionChart" class="chart"></canvas>
+  </div>
 
-  <!-- CHARTS -->
-  <section id="charts" class="section space-y-3">
+  <div class="card">
+    <canvas id="breakEvenChart" class="chart"></canvas>
+  </div>
 
-    <div class="card">
-      <canvas id="costEvolutionChart"></canvas>
-    </div>
-
-    <div class="card">
-      <canvas id="breakEvenChart"></canvas>
-    </div>
-
-  </section>
-
-</main>
+</div>
 
 <script>
-function showTab(tab) {
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-  document.getElementById(tab).classList.add("active");
+function tab(id, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'))
+
+  document.getElementById(id).classList.add('active')
+  el.classList.add('active')
 }
 </script>
 
