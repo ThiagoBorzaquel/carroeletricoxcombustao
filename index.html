@@ -3,213 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador</title>
+<title>Simulador TCO</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-
-/* BASE */
-body {
-  background:#0b1220;
-  color:#e7edf7;
-  font-family: Manrope, sans-serif;
-
-  /* CORREÇÃO CRÍTICA */
-  max-width: 420px;
-  margin: 0 auto;
-}
-
-/* REMOVE QUALQUER BRANCO */
-* {
-  background-clip: padding-box;
-}
-
-/* HEADER */
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  padding:8px 10px;
-  background:#0b1220;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-
-/* KPI */
-.kpi {
-  position: sticky;
-  top: 44px;
-  padding:6px;
-}
-
-/* CARD */
-.card {
-  background:#121a2b;
-  border-radius:10px;
-  padding:8px;
-}
-
-/* INPUT (FIX PRINCIPAL DO BRANCO) */
-input, select {
-  width:100%;
-  height:34px;
-
-  background:#1a2235 !important;
-  color:#fff !important;
-
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:8px;
-
-  padding:4px 8px;
-  font-size:14px;
-
-  outline:none;
-}
-
-/* REMOVE APPEARANCE IOS */
-input, select {
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-/* PLACEHOLDER */
-::placeholder {
-  color:#7f8ea3;
-}
-
-/* GRID COMPACTO */
-.row {
-  display:flex;
-  gap:6px;
-}
-
-/* BOTÃO */
-.btn {
-  background:#19c37d;
-  color:#000;
-  padding:7px;
-  border-radius:8px;
-  font-size:13px;
-  width:100%;
-}
-
-/* NAV */
-.nav {
-  display:flex;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-}
-
-.nav button {
-  flex:1;
-  padding:8px;
-  font-size:12px;
-  opacity:.5;
-}
-
-.nav button.active {
-  opacity:1;
-  border-bottom:2px solid #19c37d;
-}
-
-/* TABS */
-.tab {
-  display:none;
-  padding:8px;
-}
-
-.tab.active {
-  display:block;
-}
-
-/* CHART */
-.chart {
-  height:130px;
-}
-
-/* REMOVE LARGURA EXCESSIVA GLOBAL */
-section, div {
-  max-width:100%;
-}
-
-</style>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <h1 class="text-sm font-semibold">Simulador</h1>
-</div>
+<div class="app-container">
 
-<!-- KPI -->
-<div class="kpi">
-  <div class="card text-center">
-    <p class="text-[10px] text-gray-400">Economia</p>
-    <h2 id="kpiSavings" class="text-sm font-bold">R$ 0</h2>
-  </div>
-</div>
+  <!-- HEADER -->
+  <header class="header">
+    <h1>Simulador</h1>
+  </header>
 
-<!-- NAV -->
-<div class="nav">
-  <button class="active" onclick="tab('dados', this)">Dados</button>
-  <button onclick="tab('resultado', this)">Resultado</button>
-  <button onclick="tab('graficos', this)">Gráficos</button>
-</div>
+  <!-- KPI -->
+  <section class="kpi">
+    <div class="card center">
+      <p>Economia</p>
+      <h2 id="kpiSavings">R$ 0</h2>
+    </div>
+  </section>
 
-<!-- DADOS -->
-<div id="dados" class="tab active">
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="active" onclick="tab('dados', this)">Dados</button>
+    <button onclick="tab('resultado', this)">Resultado</button>
+    <button onclick="tab('graficos', this)">Gráficos</button>
+  </nav>
 
-  <div class="card">
+  <!-- DADOS -->
+  <section id="dados" class="tab active">
 
-    <input placeholder="Preço elétrico" name="evPrice">
-    <input placeholder="Preço combustão" name="icePrice">
+    <div class="card">
 
-    <div class="row">
-      <input placeholder="Km/ano" name="annualKm">
-      <input placeholder="Combustível" name="fuelPrice">
+      <input placeholder="Preço elétrico" name="evPrice">
+      <input placeholder="Preço combustão" name="icePrice">
+
+      <div class="row">
+        <input placeholder="Km/ano" name="annualKm">
+        <input placeholder="Combustível" name="fuelPrice">
+      </div>
+
+      <div class="row">
+        <input placeholder="Energia" name="energyPrice">
+        <input placeholder="IPVA %" name="ipva">
+      </div>
+
     </div>
 
-    <div class="row">
-      <input placeholder="Energia" name="energyPrice">
-      <input placeholder="IPVA %" name="ipva">
+    <button class="btn">Calcular</button>
+
+  </section>
+
+  <!-- RESULTADO -->
+  <section id="resultado" class="tab">
+
+    <div class="card">
+      <p>Payback</p>
+      <h3 id="kpiPayback">-</h3>
     </div>
 
-  </div>
+    <div class="card">
+      <p>Break-even</p>
+      <h3 id="kpiBreakEven">-</h3>
+    </div>
 
-  <button class="btn mt-2">Calcular</button>
+    <div class="card">
+      <p>ROI</p>
+      <h3 id="kpiRoi">0%</h3>
+    </div>
 
-</div>
+  </section>
 
-<!-- RESULTADO -->
-<div id="resultado" class="tab">
+  <!-- GRÁFICOS -->
+  <section id="graficos" class="tab">
 
-  <div class="card">
-    <p class="text-[10px] text-gray-400">Payback</p>
-    <h3 id="kpiPayback">-</h3>
-  </div>
+    <div class="card">
+      <canvas id="costEvolutionChart" class="chart"></canvas>
+    </div>
 
-  <div class="card mt-2">
-    <p class="text-[10px] text-gray-400">Break-even</p>
-    <h3 id="kpiBreakEven">-</h3>
-  </div>
+    <div class="card">
+      <canvas id="breakEvenChart" class="chart"></canvas>
+    </div>
 
-  <div class="card mt-2">
-    <p class="text-[10px] text-gray-400">ROI</p>
-    <h3 id="kpiRoi">0%</h3>
-  </div>
-
-</div>
-
-<!-- GRÁFICOS -->
-<div id="graficos" class="tab">
-
-  <div class="card">
-    <canvas id="costEvolutionChart" class="chart"></canvas>
-  </div>
-
-  <div class="card mt-2">
-    <canvas id="breakEvenChart" class="chart"></canvas>
-  </div>
+  </section>
 
 </div>
 
@@ -223,7 +102,6 @@ function tab(id, el){
 }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="app.js"></script>
 
 </body>
