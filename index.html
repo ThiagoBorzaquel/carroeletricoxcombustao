@@ -1,92 +1,25 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador</title>
+import { createFileRoute } from "@tanstack/react-router";
+import { Simulador } from "@/components/Simulador";
 
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Simulador TCO — Carro Elétrico x Combustão" },
+      {
+        name: "description",
+        content:
+          "Compare custo total, payback e ROI entre carros elétricos e a combustão. Responsivo do celular ao desktop.",
+      },
+      { property: "og:title", content: "Simulador TCO — Carro Elétrico x Combustão" },
+      {
+        property: "og:description",
+        content: "Compare custo total entre elétrico e combustão em diferentes horizontes.",
+      },
+    ],
+  }),
+  component: Index,
+});
 
-<body>
-
-<div class="app">
-
-  <header class="header">
-    <h1>Simulador</h1>
-  </header>
-
-  <section class="kpi">
-    <div class="card center">
-      <small>Economia</small>
-      <h2 id="kpiSavings">R$ 0</h2>
-    </div>
-  </section>
-
-  <nav class="nav">
-    <button class="active" onclick="tab('dados', this)">Dados</button>
-    <button onclick="tab('resultado', this)">Resultado</button>
-    <button onclick="tab('graficos', this)">Gráficos</button>
-  </nav>
-
-  <main class="content">
-
-    <!-- DADOS -->
-    <section id="dados" class="tab active">
-      <div class="card">
-        <input placeholder="Preço elétrico">
-        <input placeholder="Preço combustão">
-
-        <div class="row">
-          <input placeholder="Km/ano">
-          <input placeholder="Combustível">
-        </div>
-
-        <div class="row">
-          <input placeholder="Energia">
-          <input placeholder="IPVA %">
-        </div>
-      </div>
-
-      <button class="btn">Calcular</button>
-    </section>
-
-    <!-- RESULTADO -->
-    <section id="resultado" class="tab">
-      <div class="card"><p>Payback</p><h3>-</h3></div>
-      <div class="card"><p>Break-even</p><h3>-</h3></div>
-      <div class="card"><p>ROI</p><h3>0%</h3></div>
-    </section>
-
-    <!-- GRÁFICOS -->
-    <section id="graficos" class="tab">
-      <div class="card">
-        <div class="chart">
-          <canvas id="costEvolutionChart"></canvas>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="chart">
-          <canvas id="breakEvenChart"></canvas>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-</div>
-
-<script>
-function tab(id, el){
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'))
-
-  document.getElementById(id).classList.add('active')
-  el.classList.add('active')
+function Index() {
+  return <Simulador />;
 }
-</script>
-
-</body>
-</html>

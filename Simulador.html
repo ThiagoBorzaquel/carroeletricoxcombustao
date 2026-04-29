@@ -1,0 +1,369 @@
+import { useMemo, useState } from "react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+import { Zap, Fuel, TrendingUp, Calculator, BarChart3, FileInput } from "lucide-react";
+
+type Inputs = {
+  evPrice: number;
+  icePrice: number;
+  annualKm: number;
+  fuelPrice: number;
+  energyPrice: number;
+  ipva: number;
+  evConsumptionKwhPer100: number;
+  iceConsumptionKmPerL: number;
+  years: number;
+};
+
+const defaults: Inputs = {
+  evPrice: 220000,
+  icePrice: 150000,
+  annualKm: 15000,
+  fuelPrice: 6.2,
+  energyPrice: 0.95,
+  ipva: 3.5,
+  evConsumptionKwhPer100: 16,
+  iceConsumptionKmPerL: 11,
+  years: 10,
+};
+
+const fmtBRL = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+type TabKey = "dados" | "resultado" | "graficos";
+
+export function Simulador() {
+  const [inputs, setInputs] = useState<Inputs>(defaults);
+  const [tab, setTab] = useState<TabKey>("dados");
+
+  const update = (k: keyof Inputs) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = parseFloat(e.target.value);
+    setInputs((s) => ({ ...s, [k]: isNaN(v) ? 0 : v }));
+  };
+
+  const data = useMemo(() => {
+    const evAnnualEnergy =
+      (inputs.annualKm / 100) * inputs.evConsumptionKwhPer100 * inputs.energyPrice;
+    const iceAnnualFuel =
+      (inputs.annualKm / inputs.iceConsumptionKmPerL) * inputs.fuelPrice;
+    const evAnnualIpva = (inputs.evPrice * inputs.ipva) / 100 / 2; // EV: metade
+    const iceAnnualIpva = (inputs.icePrice * inputs.ipva) / 100;
+
+    const evAnnual = evAnnualEnergy + evAnnualIpva;
+    const iceAnnual = iceAnnualFuel + iceAnnualIpva;
+
+    const series = Array.from({ length: inputs.years }, (_, i) => {
+      const year = i + 1;
+      const ev = inputs.evPrice + evAnnual * year;
+      const ice = inputs.icePrice + iceAnnual * year;
+      return {
+        year: `Ano ${year}`,
+        ev: Math.round(ev),
+        ice: Math.round(ice),
+        diff: Math.round(ice - ev),
+      };
+    });
+
+    const initialDiff = inputs.evPrice - inputs.icePrice;
+    const annualSaving = iceAnnual - evAnnual;
+    const paybackYears = annualSaving > 0 ? initialDiff / annualSaving : Infinity;
+
+    const last = series[series.length - 1];
+    const totalSavings = last.ice - last.ev;
+    const roi = inputs.evPrice > 0 ? (totalSavings / inputs.evPrice) * 100 : 0;
+
+    const breakEven = series.find((s) => s.diff >= 0)?.year ?? "—";
+
+    return { series, paybackYears, totalSavings, roi, breakEven, annualSaving };
+  }, [inputs]);
+
+  const tabs: { key: TabKey; label: string; icon: typeof Calculator }[] = [
+    { key: "dados", label: "Dados", icon: FileInput },
+    { key: "resultado", label: "Resultado", icon: Calculator },
+    { key: "graficos", label: "Gráficos", icon: BarChart3 },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-6 md:px-8 md:pt-10">
+        {/* Header */}
+        <header className="mb-6 flex items-center justify-between md:mb-10">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-widest text-primary">
+              carroeletricoxcombustao
+            </p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight md:text-4xl">
+              Simulador TCO
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground md:text-base">
+              Compare custo total entre elétrico e combustão
+            </p>
+          </div>
+          <div className="hidden items-center gap-2 rounded-full border border-border bg-card px-4 py-2 md:flex">
+            <Zap className="h-4 w-4 text-primary" />
+            <span className="text-sm">vs</span>
+            <Fuel className="h-4 w-4 text-[oklch(0.78_0.16_70)]" />
+          </div>
+        </header>
+
+        {/* KPI hero */}
+        <section className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+          <KpiCard
+            title={`Economia em ${inputs.years} anos`}
+            value={fmtBRL(data.totalSavings)}
+            tone={data.totalSavings >= 0 ? "good" : "bad"}
+            icon={TrendingUp}
+            highlight
+          />
+          <KpiCard
+            title="Payback"
+            value={
+              isFinite(data.paybackYears)
+                ? `${data.paybackYears.toFixed(1)} anos`
+                : "—"
+            }
+          />
+          <KpiCard title="ROI" value={`${data.roi.toFixed(1)}%`} />
+        </section>
+
+        {/* Mobile tabs */}
+        <nav className="sticky top-0 z-10 -mx-4 mb-4 flex border-b border-border bg-background/90 px-4 backdrop-blur md:hidden">
+          {tabs.map((t) => {
+            const Icon = t.icon;
+            const active = tab === t.key;
+            return (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`flex flex-1 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-sm font-medium transition ${
+                  active
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {t.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Content: mobile = tabs, desktop = grid */}
+        <div className="grid gap-4 md:grid-cols-12 md:gap-6">
+          {/* Dados */}
+          <section
+            className={`md:col-span-5 ${tab === "dados" ? "block" : "hidden"} md:block`}
+          >
+            <Card title="Dados financeiros">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field label="Preço elétrico (R$)" value={inputs.evPrice} onChange={update("evPrice")} />
+                <Field label="Preço combustão (R$)" value={inputs.icePrice} onChange={update("icePrice")} />
+                <Field label="Km/ano" value={inputs.annualKm} onChange={update("annualKm")} />
+                <Field label="IPVA (%)" value={inputs.ipva} step={0.1} onChange={update("ipva")} />
+                <Field label="Combustível (R$/L)" value={inputs.fuelPrice} step={0.01} onChange={update("fuelPrice")} />
+                <Field label="Energia (R$/kWh)" value={inputs.energyPrice} step={0.01} onChange={update("energyPrice")} />
+                <Field label="EV (kWh/100km)" value={inputs.evConsumptionKwhPer100} step={0.1} onChange={update("evConsumptionKwhPer100")} />
+                <Field label="Combustão (km/L)" value={inputs.iceConsumptionKmPerL} step={0.1} onChange={update("iceConsumptionKmPerL")} />
+                <Field label="Horizonte (anos)" value={inputs.years} onChange={update("years")} />
+              </div>
+            </Card>
+          </section>
+
+          {/* Resultado */}
+          <section
+            className={`space-y-3 md:col-span-7 md:space-y-4 ${
+              tab === "resultado" ? "block" : "hidden"
+            } md:block`}
+          >
+            <Card title="Resultado">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <ResultStat label="Economia anual" value={fmtBRL(data.annualSaving)} />
+                <ResultStat
+                  label="Payback"
+                  value={isFinite(data.paybackYears) ? `${data.paybackYears.toFixed(1)} anos` : "—"}
+                />
+                <ResultStat label="Break-even" value={String(data.breakEven)} />
+                <ResultStat label="ROI" value={`${data.roi.toFixed(1)}%`} />
+                <ResultStat
+                  label={`Custo EV (${inputs.years}a)`}
+                  value={fmtBRL(data.series[data.series.length - 1].ev)}
+                />
+                <ResultStat
+                  label={`Custo ICE (${inputs.years}a)`}
+                  value={fmtBRL(data.series[data.series.length - 1].ice)}
+                />
+              </div>
+            </Card>
+
+            {/* Gráficos no desktop ficam visíveis junto; no mobile é outra aba */}
+            <div className={`${tab === "graficos" ? "block" : "hidden"} space-y-3 md:hidden`}>
+              <ChartsBlock data={data.series} />
+            </div>
+          </section>
+
+          {/* Charts desktop full row */}
+          <section className="hidden md:col-span-12 md:block">
+            <ChartsBlock data={data.series} />
+          </section>
+
+          {/* Mobile-only graficos tab */}
+          <section
+            className={`space-y-3 md:hidden ${tab === "graficos" ? "block" : "hidden"}`}
+          >
+            <ChartsBlock data={data.series} />
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Card({ title, children }: { title?: string; children: React.ReactNode }) {
+  return (
+    <div
+      className="rounded-2xl border border-border bg-card p-4 md:p-6"
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
+      {title && (
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          {title}
+        </h2>
+      )}
+      {children}
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  step,
+}: {
+  label: string;
+  value: number;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  step?: number;
+}) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <input
+        type="number"
+        inputMode="decimal"
+        step={step ?? 1}
+        value={value}
+        onChange={onChange}
+        className="h-11 w-full rounded-lg border border-border bg-input px-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
+      />
+    </label>
+  );
+}
+
+function ResultStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-background/40 p-3">
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="mt-1 text-base font-semibold md:text-lg">{value}</p>
+    </div>
+  );
+}
+
+function KpiCard({
+  title,
+  value,
+  tone,
+  icon: Icon,
+  highlight,
+}: {
+  label?: string;
+  title: string;
+  value: string;
+  tone?: "good" | "bad";
+  icon?: typeof TrendingUp;
+  highlight?: boolean;
+}) {
+  return (
+    <div
+      className={`rounded-2xl border border-border p-4 md:p-5 ${
+        highlight ? "bg-card" : "bg-card/60"
+      }`}
+      style={highlight ? { boxShadow: "var(--shadow-card)" } : undefined}
+    >
+      <div className="flex items-center justify-between">
+        <p className="text-xs uppercase tracking-wider text-muted-foreground">{title}</p>
+        {Icon && <Icon className="h-4 w-4 text-primary" />}
+      </div>
+      <p
+        className={`mt-2 text-2xl font-bold tracking-tight md:text-3xl ${
+          tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : ""
+        }`}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function ChartsBlock({ data }: { data: Array<{ year: string; ev: number; ice: number; diff: number }> }) {
+  const evColor = "oklch(0.78 0.18 155)";
+  const iceColor = "oklch(0.78 0.16 70)";
+  return (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
+      <Card title="Evolução dos custos">
+        <div className="h-56 w-full md:h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 8, right: 8, left: -10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.06)" />
+              <XAxis dataKey="year" stroke="oklch(0.7 0.025 255)" fontSize={11} />
+              <YAxis stroke="oklch(0.7 0.025 255)" fontSize={11} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <Tooltip
+                contentStyle={{
+                  background: "oklch(0.23 0.035 260)",
+                  border: "1px solid oklch(1 0 0 / 0.1)",
+                  borderRadius: 8,
+                  color: "oklch(0.95 0.01 250)",
+                }}
+                formatter={(v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}
+              />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Line type="monotone" dataKey="ev" name="Elétrico" stroke={evColor} strokeWidth={2.5} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="ice" name="Combustão" stroke={iceColor} strokeWidth={2.5} dot={{ r: 3 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+      <Card title="Ponto de equilíbrio">
+        <div className="h-56 w-full md:h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 8, right: 8, left: -10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.06)" />
+              <XAxis dataKey="year" stroke="oklch(0.7 0.025 255)" fontSize={11} />
+              <YAxis stroke="oklch(0.7 0.025 255)" fontSize={11} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <Tooltip
+                contentStyle={{
+                  background: "oklch(0.23 0.035 260)",
+                  border: "1px solid oklch(1 0 0 / 0.1)",
+                  borderRadius: 8,
+                  color: "oklch(0.95 0.01 250)",
+                }}
+                formatter={(v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}
+              />
+              <Bar dataKey="diff" name="Economia acumulada" fill={evColor} radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+    </div>
+  );
+}
