@@ -1,205 +1,146 @@
-/* RESET ESSENCIAL */
-*,
-*::before,
-*::after {
+/* RESET */
+* {
   box-sizing: border-box;
-}
-
-html, body {
   margin: 0;
   padding: 0;
 }
 
-/* TOKENS */
-:root {
-  --bg: #0b1220;
-  --text: #e7edf7;
-  --muted: #93a4bd;
-  --accent: #19c37d;
-
-  --space-xs: 0.4rem;
-  --space-sm: 0.6rem;
-  --space-md: 0.9rem;
-  --space-lg: 1.2rem;
-
-  --radius: 12px;
-}
-
-/* BASE */
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Manrope", sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-/* CONTAINERS */
-main,
-section,
-aside {
+html, body {
   width: 100%;
-  max-width: 100%;
   overflow-x: hidden;
+  background: #0b1220;
+  font-family: Manrope, sans-serif;
+  color: #e7edf7;
 }
 
-/* INPUTS */
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.input-group span {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.input-group input,
-.input-group select {
-  width: 100%;
-  height: 42px;
-  padding: 0.6rem 0.7rem;
-  border-radius: var(--radius);
-  border: 1px solid rgba(255,255,255,0.1);
-  background: #1a2235;
-  color: white;
-  font-size: 16px;
-}
-
-/* CARDS */
-.kpi-card {
-  background: #121a2b;
-  padding: 0.7rem;
-  border-radius: var(--radius);
-}
-
-.kpi-card span {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.kpi-card strong {
-  font-size: 1rem;
-}
-
-/* GRID RESPONSIVO */
-.responsive-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 8px;
-}
-
-/* CHARTS */
-.chart-wrap {
-  width: 100%;
-  height: 200px;
-}
-
-.chart-wrap-sm {
-  height: 180px;
-}
-
-/* TABELA */
-.table-scroll-wrapper {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  min-width: 320px;
-  border-collapse: collapse;
-}
-
-td, th {
-  padding: 8px;
-  font-size: 13px;
-}
-
-/* BOTÕES */
-button {
-  border-radius: 10px;
-  padding: 0.7rem;
-  font-size: 0.9rem;
+/* APP CONTAINER (FIX PRINCIPAL) */
+.app-container {
+  max-width: 390px;
+  margin: 0 auto;
+  padding: 6px;
 }
 
 /* HEADER */
-header .mx-auto {
-  flex-wrap: wrap;
-  gap: 8px;
+.header {
+  position: sticky;
+  top: 0;
+  background: #0b1220;
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  z-index: 10;
 }
 
-/* MOBILE FIRST */
-@media (max-width: 640px) {
-  body {
-    font-size: 14px;
-  }
-
-  .chart-wrap {
-    height: 190px;
-  }
-
-  .chart-wrap-sm {
-    height: 160px;
-  }
-
-  .kpi-card {
-    padding: 0.6rem;
-  }
+.header h1 {
+  font-size: 14px;
 }
 
-/* DESKTOP MODE */
-@media (min-width: 1024px) {
+/* KPI */
+.kpi {
+  position: sticky;
+  top: 42px;
+  padding: 6px 0;
+}
 
-  /* remove comportamento de abas */
-  .nav {
-    display: none;
-  }
+.center {
+  text-align: center;
+}
 
-  .tab {
-    display: block !important;
-    padding: 0;
-  }
+.kpi h2 {
+  font-size: 15px;
+}
 
-  /* layout grid */
-  body {
-    display: grid;
-    grid-template-columns: 420px 1fr;
-    gap: 20px;
-    max-width: 1400px;
-    margin: auto;
-  }
+/* CARD */
+.card {
+  background: #121a2b;
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 6px;
+}
 
-  /* header ocupa topo */
-  .header {
-    grid-column: 1 / -1;
-    position: relative;
-  }
+/* INPUT (SEM BRANCO) */
+input, select {
+  width: 100%;
+  height: 34px;
+  background: #1a2235;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 13px;
+  margin-bottom: 4px;
+  outline: none;
+}
 
-  .kpi {
-    grid-column: 1 / -1;
-    position: relative;
-  }
+/* FIX IOS */
+input, select {
+  -webkit-appearance: none;
+  appearance: none;
+}
 
-  /* dados à esquerda */
-  #dados {
-    grid-column: 1;
-  }
+/* PLACEHOLDER */
+::placeholder {
+  color: #7f8ea3;
+}
 
-  /* resultado + gráficos à direita */
-  #resultado,
-  #graficos {
-    grid-column: 2;
-  }
+/* ROW */
+.row {
+  display: flex;
+  gap: 6px;
+}
 
-  /* gráficos lado a lado */
-  #graficos {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
+.row > * {
+  flex: 1;
+  min-width: 0;
+}
 
-  .chart {
-    height: 260px;
-  }
+/* BOTÃO */
+.btn {
+  width: 100%;
+  background: #19c37d;
+  color: #000;
+  padding: 7px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* NAV */
+.nav {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.nav button {
+  flex: 1;
+  padding: 8px;
+  font-size: 12px;
+  opacity: 0.5;
+  background: none;
+  color: white;
+  border: none;
+}
+
+.nav button.active {
+  opacity: 1;
+  border-bottom: 2px solid #19c37d;
+}
+
+/* TABS */
+.tab {
+  display: none;
+  padding-top: 6px;
+}
+
+.tab.active {
+  display: block;
+}
+
+/* CHART */
+.chart {
+  height: 130px;
+}
+
+/* GARANTIA FINAL */
+section, div, form {
+  max-width: 100%;
 }
