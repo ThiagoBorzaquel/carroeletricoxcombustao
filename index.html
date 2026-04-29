@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simulador TCO</title>
 
 <link rel="stylesheet" href="style.css">
@@ -14,99 +13,88 @@
 
 <div class="app-container">
 
-  <!-- HEADER -->
+  <div class="content-wrapper">
 
-  <header class="header">
-    <h1>Simulador</h1>
-  </header>
+    <!-- HEADER -->
+    <header class="header">
+      <h1>Simulador</h1>
+    </header>
 
-  <!-- KPI -->
+    <!-- KPI -->
+    <section class="kpi">
+      <div class="card center">
+        <p>Economia</p>
+        <h2 id="kpiSavings">R$ 0</h2>
+      </div>
+    </section>
 
-  <section class="kpi">
-    <div class="card center">
-      <p>Economia</p>
-      <h2 id="kpiSavings">R$ 0</h2>
-    </div>
-  </section>
+    <!-- NAV -->
+    <nav class="nav">
+      <button class="active" onclick="tab('dados', this)">Dados</button>
+      <button onclick="tab('resultado', this)">Resultado</button>
+      <button onclick="tab('graficos', this)">Gráficos</button>
+    </nav>
 
-  <!-- NAV -->
+    <!-- DADOS -->
+    <section id="dados" class="tab active">
 
-  <nav class="nav">
-    <button class="active" onclick="tab('dados', this)">Dados</button>
-    <button onclick="tab('resultado', this)">Resultado</button>
-    <button onclick="tab('graficos', this)">Gráficos</button>
-  </nav>
+      <div class="card">
+        <input placeholder="Preço elétrico" name="evPrice">
+        <input placeholder="Preço combustão" name="icePrice">
 
-  <!-- DADOS -->
+        <div class="row">
+          <input placeholder="Km/ano" name="annualKm">
+          <input placeholder="Combustível" name="fuelPrice">
+        </div>
 
-  <section id="dados" class="tab active">
+        <div class="row">
+          <input placeholder="Energia" name="energyPrice">
+          <input placeholder="IPVA %" name="ipva">
+        </div>
+      </div>
 
-```
-<div class="card">
+      <button class="btn">Calcular</button>
 
-  <input placeholder="Preço elétrico" name="evPrice">
-  <input placeholder="Preço combustão" name="icePrice">
+    </section>
 
-  <div class="row">
-    <input placeholder="Km/ano" name="annualKm">
-    <input placeholder="Combustível" name="fuelPrice">
+    <!-- RESULTADO -->
+    <section id="resultado" class="tab">
+
+      <div class="card">
+        <p>Payback</p>
+        <h3 id="kpiPayback">-</h3>
+      </div>
+
+      <div class="card">
+        <p>Break-even</p>
+        <h3 id="kpiBreakEven">-</h3>
+      </div>
+
+      <div class="card">
+        <p>ROI</p>
+        <h3 id="kpiRoi">0%</h3>
+      </div>
+
+    </section>
+
+    <!-- GRÁFICOS -->
+    <section id="graficos" class="tab">
+
+      <div class="card">
+        <div class="chart-wrapper">
+          <canvas id="costEvolutionChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chart-wrapper">
+          <canvas id="breakEvenChart"></canvas>
+        </div>
+      </div>
+
+    </section>
+
   </div>
-
-  <div class="row">
-    <input placeholder="Energia" name="energyPrice">
-    <input placeholder="IPVA %" name="ipva">
-  </div>
-
-</div>
-
-<button class="btn">Calcular</button>
-```
-
-  </section>
-
-  <!-- RESULTADO -->
-
-  <section id="resultado" class="tab">
-
-```
-<div class="card">
-  <p>Payback</p>
-  <h3 id="kpiPayback">-</h3>
-</div>
-
-<div class="card">
-  <p>Break-even</p>
-  <h3 id="kpiBreakEven">-</h3>
-</div>
-
-<div class="card">
-  <p>ROI</p>
-  <h3 id="kpiRoi">0%</h3>
-</div>
-```
-
-  </section>
-
-  <!-- GRÁFICOS -->
-
-  <section id="graficos" class="tab">
-
-```
-<div class="card">
-  <!-- chart-wrapper: obrigatório para Chart.js ser responsivo -->
-  <div class="chart-wrapper">
-    <canvas id="costEvolutionChart"></canvas>
-  </div>
-</div>
-
-<div class="card">
-  <div class="chart-wrapper">
-    <canvas id="breakEvenChart"></canvas>
-  </div>
-</div>
-```
-
-  </section>
 
 </div>
 
