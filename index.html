@@ -3,16 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador TCO</title>
+<title>Simulador</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
+
+/* BASE */
 body {
   background:#0b1220;
+  color:#e7edf7;
   font-family: Manrope, sans-serif;
-  color:white;
-  font-size:13px;
+
+  /* CORREÇÃO CRÍTICA */
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* REMOVE QUALQUER BRANCO */
+* {
+  background-clip: padding-box;
 }
 
 /* HEADER */
@@ -20,59 +30,80 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
+  padding:8px 10px;
   background:#0b1220;
-  padding:8px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
+  border-bottom:1px solid rgba(255,255,255,0.06);
 }
 
 /* KPI */
 .kpi {
   position: sticky;
   top: 44px;
-  z-index: 40;
-  padding:8px;
+  padding:6px;
 }
 
-.kpi h2 {
-  font-size:16px;
-}
-
-/* CARDS */
+/* CARD */
 .card {
   background:#121a2b;
   border-radius:10px;
   padding:8px;
 }
 
-/* INPUT */
-.input {
+/* INPUT (FIX PRINCIPAL DO BRANCO) */
+input, select {
   width:100%;
   height:34px;
-  background:#1a2235;
+
+  background:#1a2235 !important;
+  color:#fff !important;
+
+  border:1px solid rgba(255,255,255,0.08);
   border-radius:8px;
+
   padding:4px 8px;
   font-size:14px;
-  margin-bottom:4px;
+
+  outline:none;
+}
+
+/* REMOVE APPEARANCE IOS */
+input, select {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* PLACEHOLDER */
+::placeholder {
+  color:#7f8ea3;
+}
+
+/* GRID COMPACTO */
+.row {
+  display:flex;
+  gap:6px;
 }
 
 /* BOTÃO */
 .btn {
-  padding:6px;
-  font-size:13px;
+  background:#19c37d;
+  color:#000;
+  padding:7px;
   border-radius:8px;
+  font-size:13px;
+  width:100%;
 }
 
 /* NAV */
 .nav {
   display:flex;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
 .nav button {
   flex:1;
   padding:8px;
   font-size:12px;
-  opacity:.6;
+  opacity:.5;
 }
 
 .nav button.active {
@@ -92,44 +123,14 @@ body {
 
 /* CHART */
 .chart {
-  height:140px;
+  height:130px;
 }
 
-/* DESKTOP */
-@media (min-width:1024px){
-
-  .nav { display:none; }
-
-  .tab {
-    display:block !important;
-  }
-
-  body {
-    display:grid;
-    grid-template-columns:380px 1fr;
-    gap:16px;
-    max-width:1300px;
-    margin:auto;
-  }
-
-  .header, .kpi {
-    grid-column:1/-1;
-    position:relative;
-  }
-
-  #dados { grid-column:1; }
-  #resultado, #graficos { grid-column:2; }
-
-  #graficos {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-  }
-
-  .chart {
-    height:220px;
-  }
+/* REMOVE LARGURA EXCESSIVA GLOBAL */
+section, div {
+  max-width:100%;
 }
+
 </style>
 </head>
 
@@ -137,14 +138,14 @@ body {
 
 <!-- HEADER -->
 <div class="header">
-  <h1 class="text-sm font-bold">Simulador</h1>
+  <h1 class="text-sm font-semibold">Simulador</h1>
 </div>
 
 <!-- KPI -->
 <div class="kpi">
   <div class="card text-center">
     <p class="text-[10px] text-gray-400">Economia</p>
-    <h2 id="kpiSavings">R$ 0</h2>
+    <h2 id="kpiSavings" class="text-sm font-bold">R$ 0</h2>
   </div>
 </div>
 
@@ -160,24 +161,22 @@ body {
 
   <div class="card">
 
-    <input class="input" placeholder="Preço elétrico" name="evPrice">
-    <input class="input" placeholder="Preço combustão" name="icePrice">
+    <input placeholder="Preço elétrico" name="evPrice">
+    <input placeholder="Preço combustão" name="icePrice">
 
-    <div style="display:flex; gap:4px;">
-      <input class="input" placeholder="Km/ano" name="annualKm">
-      <input class="input" placeholder="Combustível" name="fuelPrice">
+    <div class="row">
+      <input placeholder="Km/ano" name="annualKm">
+      <input placeholder="Combustível" name="fuelPrice">
     </div>
 
-    <div style="display:flex; gap:4px;">
-      <input class="input" placeholder="Energia" name="energyPrice">
-      <input class="input" placeholder="IPVA %" name="ipva">
+    <div class="row">
+      <input placeholder="Energia" name="energyPrice">
+      <input placeholder="IPVA %" name="ipva">
     </div>
 
   </div>
 
-  <button class="btn bg-green-500 text-black w-full mt-2">
-    Calcular
-  </button>
+  <button class="btn mt-2">Calcular</button>
 
 </div>
 
