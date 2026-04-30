@@ -1,248 +1,438 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>carroeletricoxcombustao.com.br | Simulador TCO, FIPE e Payback</title>
-  <meta name="description" content="Compare carro elétrico x combustão com simulador de TCO, FIPE, payback, break-even, ROI, emissões e sensibilidade em carroeletricoxcombustao.com.br.">
-  <title>TCO Auto Compare | Elétrico vs Combustão</title>
-  <meta name="description" content="Simulador de custo total de propriedade para comparar carro elétrico e carro a combustão com FIPE, gráficos e sensibilidade.">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <meta name="author" content="carroeletricoxcombustao.com.br">
-  <meta name="application-name" content="carroeletricoxcombustao.com.br">
-  <meta name="theme-color" content="#0b1220">
-  <meta name="google-adsense-account" content="ca-pub-5213961841779335">
-  <meta name="google-site-verification" content="REPLACE_WITH_SEARCH_CONSOLE_TOKEN">
-  <link rel="canonical" href="https://carroeletricoxcombustao.com.br/">
-  <link rel="manifest" href="./site.webmanifest">
-  <meta property="og:locale" content="pt_BR">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="carroeletricoxcombustao.com.br">
-  <meta property="og:title" content="Carro Elétrico x Combustão | Simulador TCO, FIPE e Payback">
-  <meta property="og:description" content="Descubra qual carro vale mais a pena com um comparador de custo total, FIPE, emissões, ROI e ponto de equilíbrio.">
-  <meta property="og:url" content="https://carroeletricoxcombustao.com.br/">
-  <meta property="og:image" content="https://carroeletricoxcombustao.com.br/assets/og-cover.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Carro Elétrico x Combustão | Simulador TCO, FIPE e Payback">
-  <meta name="twitter:description" content="Compare custo total, economia, FIPE, sensibilidade e emissões para decidir entre carro elétrico e combustão.">
-  <meta name="twitter:image" content="https://carroeletricoxcombustao.com.br/assets/og-cover.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            slatebase: "#0b1220",
-            card: "#121a2b",
-            accent: "#19c37d",
-            warn: "#ffb020",
-            danger: "#ff6b6b",
-            info: "#5ac8fa"
-          },
-          boxShadow: {
-            glow: "0 20px 60px rgba(25, 195, 125, 0.18)"
-          }
-        }
-      }
-    };
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5213961841779335"
-     crossorigin="anonymous"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carro Elétrico vs Combustão | Simulador TCO Gratuito</title>
+  <meta name="description" content="Descubra se o carro elétrico vale a pena para você. Compare custo total de propriedade (TCO), payback, break-even e ROI com nosso simulador gratuito." />
+  <meta name="keywords" content="carro elétrico vale a pena, carro elétrico vs combustão, custo carro elétrico, TCO carro elétrico, simulador carro elétrico, economia carro elétrico" />
+  <meta name="author" content="CarroEletricoXCombustao" />
+  <link rel="canonical" href="https://carroeletricoxcombustao.com.br/" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Carro Elétrico vs Combustão — Simulador TCO" />
+  <meta property="og:description" content="Calcule economia, payback e ROI entre elétrico e combustão. Simulador gratuito com gráficos interativos." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://carroeletricoxcombustao.com.br/" />
+  <meta property="og:image" content="https://carroeletricoxcombustao.com.br/og-image.png" />
+  <meta property="og:locale" content="pt_BR" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Carro Elétrico vs Combustão — Simulador TCO" />
+  <meta name="twitter:description" content="Calcule economia, payback e ROI entre elétrico e combustão em segundos." />
+  <meta name="twitter:image" content="https://carroeletricoxcombustao.com.br/og-image.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Structured Data -->
   <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "carroeletricoxcombustao.com.br",
-      "url": "https://carroeletricoxcombustao.com.br/",
-      "applicationCategory": "FinanceApplication",
-      "operatingSystem": "Web",
-      "inLanguage": "pt-BR",
-      "description": "Simulador de custo total de propriedade para comparar carro elétrico e carro a combustão com FIPE, payback, ROI, emissões e sensibilidade.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "BRL"
-      }
-    }
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Simulador TCO — Carro Elétrico vs Combustão",
+    "url": "https://carroeletricoxcombustao.com.br",
+    "description": "Simulador interativo de custo total de propriedade entre carro elétrico e a combustão",
+    "applicationCategory": "FinanceApplication",
+    "inLanguage": "pt-BR",
+    "isAccessibleForFree": true
+  }
   </script>
 </head>
-<body class="min-h-screen bg-slatebase text-slate-100 antialiased">
-  <a href="#mainContent" class="skip-link">Pular para o conteúdo principal</a>
-  <div class="app-shell relative overflow-hidden">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(25,195,125,0.16),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(90,200,250,0.16),_transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_40%)]"></div>
-    <header class="relative z-10 border-b border-white/10">
-      <div class="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <div>
-          <p class="text-xs uppercase tracking-[0.32em] text-accent/80">carroeletricoxcombustao.com.br</p>
-          <h1 class="font-display mt-2 text-2xl font-bold text-white sm:text-4xl">Elétrico vs Combustão</h1>
-        </div>
-        <button id="themeToggle" type="button" aria-pressed="false" aria-label="Alternar entre tema escuro e claro" class="w-full rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto">
-          Alternar tema
-        </button>
-      </div>
-    </header>
+<body>
 
-    <main id="mainContent" class="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <section class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <section aria-labelledby="simulationTitle" class="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-glow backdrop-blur sm:p-6">
-          <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p class="text-sm text-slate-300">Compare custo total, retorno, emissões e sensibilidade em diferentes horizontes.</p>
-              <h2 id="simulationTitle" class="mt-2 font-display text-2xl font-bold text-white">Simulação principal</h2>
-            </div>
-            <button id="loadDemoBtn" class="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110 sm:w-auto">
-              Carregar exemplo
-            </button>
-          </div>
-
-          <section class="mt-6 rounded-2xl border border-accent/20 bg-accent/10 p-4" aria-labelledby="tutorialTitle">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <h3 id="tutorialTitle" class="font-display text-lg font-bold text-white">Como usar o simulador</h3>
-                <p class="mt-1 text-sm text-slate-300">Preencha os custos dos dois carros, ajuste o seu uso anual e veja quem vence no custo total.</p>
-              </div>
-              <span class="rounded-full border border-accent/30 bg-black/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent">Tutorial rápido</span>
-            </div>
-            <ol class="mt-4 grid gap-3 text-sm text-slate-200 lg:grid-cols-3">
-              <li class="guide-step"><strong>1.</strong> Informe preços, consumo, seguro, manutenção e estado do IPVA.</li>
-              <li class="guide-step"><strong>2.</strong> Use a FIPE se quiser sincronizar preço e histórico estimado do veículo.</li>
-              <li class="guide-step"><strong>3.</strong> Ajuste a sensibilidade para testar cenários e leia o veredito final.</li>
-            </ol>
-          </section>
-
-          <form id="tcoForm" class="mt-6 space-y-8" novalidate>
-            <fieldset>
-              <legend class="text-lg font-semibold text-white">Dados financeiros</legend>
-              <div class="mb-4 mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">Valores em R$</span>
-              </div>
-              <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                <label class="input-group"><span>Preço carro elétrico</span><input type="number" step="0.01" min="0" name="evPrice" value="220000"><small>Preço de compra ou valor FIPE atual do modelo elétrico.</small></label>
-                <label class="input-group"><span>Preço carro combustão</span><input type="number" step="0.01" min="0" name="icePrice" value="145000"><small>Preço de compra ou valor FIPE atual do modelo a combustão.</small></label>
-                <label class="input-group"><span>Km rodados por ano</span><input type="number" step="1" min="0" name="annualKm" value="18000"><small>Use sua média anual para o cálculo ficar realista.</small></label>
-                <label class="input-group"><span>Preço energia por kWh</span><input type="number" step="0.01" min="0" name="energyPrice" value="0.95"><small>Valor médio pago na conta de luz ou no ponto de recarga.</small></label>
-                <label class="input-group"><span>Preço combustível</span><input type="number" step="0.01" min="0" name="fuelPrice" value="5.89"><small>Preço médio por litro do combustível usado no carro.</small></label>
-                <label class="input-group"><span>Estado para IPVA</span><select name="state"></select><small>Usado para aplicar a alíquota estimada do IPVA de cada veículo.</small></label>
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend class="mb-4 text-lg font-semibold text-white">Eficiência e custos anuais</legend>
-              <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <label class="input-group"><span>Consumo elétrico (km/kWh)</span><input type="number" step="0.1" min="0.1" name="evEfficiency" value="6.2"><small>Quanto maior esse número, mais eficiente é o carro elétrico.</small></label>
-                <label class="input-group"><span>Consumo combustão (km/l)</span><input type="number" step="0.1" min="0.1" name="iceEfficiency" value="11.8"><small>Quanto maior esse número, menos combustível o carro consome.</small></label>
-                <label class="input-group"><span>Seguro anual elétrico</span><input type="number" step="0.01" min="0" name="evInsurance" value="6800"><small>Informe o custo anual estimado do seguro do elétrico.</small></label>
-                <label class="input-group"><span>Seguro anual combustão</span><input type="number" step="0.01" min="0" name="iceInsurance" value="5900"><small>Informe o custo anual estimado do seguro do carro a combustão.</small></label>
-                <label class="input-group"><span>Manutenção anual elétrico</span><input type="number" step="0.01" min="0" name="evMaintenance" value="2200"><small>Revisões, pneus e manutenção recorrente do elétrico.</small></label>
-                <label class="input-group"><span>Manutenção anual combustão</span><input type="number" step="0.01" min="0" name="iceMaintenance" value="4300"><small>Inclua revisões, óleo, filtros e manutenção recorrente.</small></label>
-                <label class="input-group"><span>CO2 por litro (kg)</span><input type="number" step="0.01" min="0" name="co2PerLiter" value="2.31"><small>Fator usado para estimar as emissões do carro a combustão.</small></label>
-                <label class="input-group"><span>CO2 da energia por kWh (kg)</span><input type="number" step="0.001" min="0" name="co2PerKwh" value="0.08"><small>Fator usado para estimar as emissões indiretas da recarga.</small></label>
-              </div>
-            </fieldset>
-
-            <div class="space-y-4">
-              <section aria-labelledby="fipeSectionTitle" class="rounded-2xl border border-white/10 bg-black/10 p-4">
-                <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <h3 id="fipeSectionTitle" class="text-lg font-semibold text-white">FIPE opcional</h3>
-                  <button type="button" id="clearFipeBtn" class="text-sm text-slate-300 transition hover:text-white">Limpar seleção</button>
-                </div>
-                <div class="grid gap-4 2xl:grid-cols-2">
-                  <fieldset class="fipe-card min-w-0">
-                    <legend class="sr-only">Consulta FIPE do carro elétrico</legend>
-                    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><h4 class="font-semibold text-white">Carro elétrico</h4><button type="button" data-role="load-fipe" data-vehicle="ev" class="fipe-action self-start sm:self-auto">Buscar FIPE</button></div>
-                    <div class="grid gap-3">
-                      <label class="input-group"><span>Tipo</span><select data-fipe="vehicleType" data-vehicle="ev"><option value="carros">Carro</option><option value="motos">Moto</option><option value="caminhoes">Caminhão</option></select><small>Escolha a categoria do veículo para filtrar a FIPE.</small></label>
-                      <label class="input-group"><span>Marca</span><select data-fipe="brand" data-vehicle="ev"></select><small>Selecione a marca para liberar a lista de modelos.</small></label>
-                      <label class="input-group"><span>Modelo</span><select data-fipe="model" data-vehicle="ev"></select><small>Selecione o modelo elétrico desejado.</small></label>
-                      <label class="input-group"><span>Ano/combustível</span><select data-fipe="year" data-vehicle="ev"></select><small>Escolha a versão para importar o valor FIPE.</small></label>
-                    </div>
-                  </fieldset>
-                  <fieldset class="fipe-card min-w-0">
-                    <legend class="sr-only">Consulta FIPE do carro a combustão</legend>
-                    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><h4 class="font-semibold text-white">Carro combustão</h4><button type="button" data-role="load-fipe" data-vehicle="ice" class="fipe-action self-start sm:self-auto">Buscar FIPE</button></div>
-                    <div class="grid gap-3">
-                      <label class="input-group"><span>Tipo</span><select data-fipe="vehicleType" data-vehicle="ice"><option value="carros">Carro</option><option value="motos">Moto</option><option value="caminhoes">Caminhão</option></select><small>Escolha a categoria do veículo para filtrar a FIPE.</small></label>
-                      <label class="input-group"><span>Marca</span><select data-fipe="brand" data-vehicle="ice"></select><small>Selecione a marca para liberar a lista de modelos.</small></label>
-                      <label class="input-group"><span>Modelo</span><select data-fipe="model" data-vehicle="ice"></select><small>Selecione o modelo a combustão desejado.</small></label>
-                      <label class="input-group"><span>Ano/combustível</span><select data-fipe="year" data-vehicle="ice"></select><small>Escolha a versão para importar o valor FIPE.</small></label>
-                    </div>
-                  </fieldset>
-                </div>
-                <p id="fipeStatus" role="status" aria-live="polite" class="mt-4 text-sm text-slate-300">A consulta FIPE é opcional. Você pode preencher manualmente ou sincronizar os preços atuais pela API pública.</p>
-              </section>
-
-              <section aria-labelledby="sensitivityTitle" class="rounded-2xl border border-white/10 bg-black/10 p-4">
-                <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><h3 id="sensitivityTitle" class="text-lg font-semibold text-white">Sensibilidade</h3><span class="text-xs text-slate-400">Cenário stress test</span></div>
-                <p class="mb-4 text-sm text-slate-300">Use estes controles para testar como mudanças de preços e uso anual afetam o resultado final.</p>
-                <div class="space-y-5">
-                  <label class="slider-group"><div class="flex justify-between gap-4 text-sm"><span>Aumento do combustível</span><span id="fuelIncreaseValue" aria-live="polite">15%</span></div><input type="range" min="-30" max="80" step="1" value="15" name="fuelIncrease" aria-describedby="fuelIncreaseValue"></label>
-                  <label class="slider-group"><div class="flex justify-between gap-4 text-sm"><span>Aumento da energia</span><span id="energyIncreaseValue" aria-live="polite">8%</span></div><input type="range" min="-30" max="80" step="1" value="8" name="energyIncrease" aria-describedby="energyIncreaseValue"></label>
-                  <label class="slider-group"><div class="flex justify-between gap-4 text-sm"><span>Variação da quilometragem</span><span id="kmVariationValue" aria-live="polite">10%</span></div><input type="range" min="-50" max="80" step="1" value="10" name="kmVariation" aria-describedby="kmVariationValue"></label>
-                </div>
-              </section>
-            </div>
-
-            <div class="flex flex-col gap-3 sm:flex-row">
-              <button type="submit" class="rounded-2xl bg-accent px-5 py-3 font-semibold text-slate-950 transition hover:brightness-110">Calcular cenário</button>
-              <button type="button" id="resetBtn" class="rounded-2xl border border-white/15 bg-white/5 px-5 py-3 font-semibold text-white transition hover:bg-white/10">Resetar</button>
-            </div>
-          </form>
-        </section>
-
-        <aside class="space-y-6" aria-labelledby="summaryTitle">
-          <section class="rounded-3xl border border-white/10 bg-card/90 p-4 sm:p-6">
-            <p class="text-sm uppercase tracking-[0.24em] text-accent/80">Resumo</p>
-            <h2 id="summaryTitle" class="sr-only">Resumo da simulação</h2>
-            <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-1" aria-live="polite">
-              <article class="kpi-card"><span>Economia acumulada em 10 anos</span><strong id="kpiSavings" tabindex="-1">R$ 0</strong></article>
-              <article class="kpi-card"><span>Payback estimado</span><strong id="kpiPayback">-</strong></article>
-              <article class="kpi-card"><span>Break-even</span><strong id="kpiBreakEven">-</strong></article>
-              <article class="kpi-card"><span>ROI do elétrico</span><strong id="kpiRoi">0%</strong></article>
-              <article class="kpi-card"><span>CO2 evitado em 10 anos</span><strong id="kpiCo2">0 kg</strong></article>
-              <article class="kpi-card"><span>IPVA anual comparado</span><strong id="kpiIpva">R$ 0</strong></article>
-            </div>
-          </section>
-
-          <section class="rounded-3xl border border-white/10 bg-card/90 p-4 sm:p-6">
-            <div class="flex items-center justify-between"><h3 class="text-lg font-semibold text-white">Horizontes de TCO</h3><span class="text-xs text-slate-400">1, 5 e 10 anos</span></div>
-            <div class="mt-4 overflow-x-auto rounded-2xl border border-white/10">
-              <table class="w-full min-w-[480px] text-left text-sm">
-                <thead class="bg-white/5 text-slate-300"><tr><th class="px-4 py-3">Período</th><th class="px-4 py-3">Elétrico</th><th class="px-4 py-3">Combustão</th><th class="px-4 py-3">Diferença</th></tr></thead>
-                <tbody id="summaryTableBody" aria-live="polite"></tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="rounded-3xl border border-white/10 bg-card/90 p-4 sm:p-6" aria-labelledby="verdictTitle">
-            <div class="flex items-center justify-between">
-              <h3 id="verdictTitle" class="text-lg font-semibold text-white">Veredito</h3>
-              <span id="verdictBadge" class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">Analisando</span>
-            </div>
-            <div class="mt-4 space-y-3">
-              <p id="verdictHeadline" class="font-display text-xl font-bold text-white">Calculando melhor opção...</p>
-              <p id="verdictBody" class="text-sm leading-6 text-slate-300">Preencha os dados para ver qual carro entrega o melhor custo total no cenário atual.</p>
-            </div>
-          </section>
-        </aside>
-      </section>
-
-      <section class="mt-6 grid gap-6 xl:grid-cols-3">
-        <article class="chart-panel xl:col-span-2"><div class="panel-header"><div><p class="panel-eyebrow">Interativo</p><h3 class="panel-title">Evolução dos custos</h3></div></div><div class="chart-wrap"><canvas id="costEvolutionChart" aria-label="Gráfico de evolução dos custos acumulados do carro elétrico e combustão" role="img"></canvas></div></article>
-        <article class="chart-panel"><div class="panel-header"><div><p class="panel-eyebrow">Break-even</p><h3 class="panel-title">Ponto de equilíbrio</h3></div></div><div class="chart-wrap chart-wrap-sm"><canvas id="breakEvenChart" aria-label="Gráfico do ponto de equilíbrio e economia acumulada ao longo dos anos" role="img"></canvas></div></article>
-        <article class="chart-panel"><div class="panel-header"><div><p class="panel-eyebrow">Categorias</p><h3 class="panel-title">Breakdown anual do elétrico</h3></div></div><div class="chart-wrap chart-wrap-sm"><canvas id="evBreakdownChart" aria-label="Gráfico de composição anual de custos do carro elétrico" role="img"></canvas></div></article>
-        <article class="chart-panel"><div class="panel-header"><div><p class="panel-eyebrow">Categorias</p><h3 class="panel-title">Breakdown anual da combustão</h3></div></div><div class="chart-wrap chart-wrap-sm"><canvas id="iceBreakdownChart" aria-label="Gráfico de composição anual de custos do carro a combustão" role="img"></canvas></div></article>
-        <article class="chart-panel"><div class="panel-header"><div><p class="panel-eyebrow">FIPE</p><h3 class="panel-title">Histórico e depreciação</h3></div></div><div class="chart-wrap chart-wrap-sm"><canvas id="fipeHistoryChart" aria-label="Gráfico de histórico de preços e depreciação estimada da FIPE" role="img"></canvas></div></article>
-      </section>
-    </main>
+  <!-- COOKIE BANNER -->
+  <div id="cookieBanner" class="cookie-banner" role="alert" aria-live="polite">
+    <p>Usamos cookies para melhorar sua experiência. <a href="cookies.html">Saiba mais</a>.</p>
+    <button id="acceptCookies" class="btn-cookie">Aceitar</button>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon" aria-hidden="true">⚡</span>
+        <span class="logo-text">Elétrico<span class="logo-x">×</span>Combustão</span>
+      </div>
+      <p class="header-tagline">Simulador de Custo Total de Propriedade</p>
+    </div>
+  </header>
+
+  <!-- HERO SEO TEXT -->
+  <section class="hero-section" aria-label="Apresentação">
+    <div class="container">
+      <h1 class="hero-title">Carro Elétrico <em>vale a pena</em> pra você?</h1>
+      <p class="hero-subtitle">Compare o <strong>custo total de propriedade</strong> (TCO) entre elétrico e combustão, calcule o <strong>payback real</strong> e descubra em quanto tempo você estará economizando.</p>
+    </div>
+  </section>
+
+  <!-- MAIN APP -->
+  <main id="main" class="container">
+
+    <!-- TAB NAV -->
+    <nav class="tab-nav" role="tablist" aria-label="Seções do simulador">
+      <button class="tab-btn active" data-tab="simulacao" role="tab" aria-selected="true" aria-controls="tab-simulacao">
+        <span class="tab-icon">⚙️</span> Simulação
+      </button>
+      <button class="tab-btn" data-tab="resultado" role="tab" aria-selected="false" aria-controls="tab-resultado">
+        <span class="tab-icon">📊</span> Resultado
+      </button>
+      <button class="tab-btn" data-tab="graficos" role="tab" aria-selected="false" aria-controls="tab-graficos">
+        <span class="tab-icon">📈</span> Gráficos
+      </button>
+    </nav>
+
+    <!-- ===== TAB: SIMULAÇÃO ===== -->
+    <section id="tab-simulacao" class="tab-panel active" role="tabpanel" aria-labelledby="tab-simulacao">
+
+      <!-- ADSENSE SLOT (top) -->
+      <div class="ad-slot ad-slot--top" aria-label="Anúncio">
+        <!-- Google AdSense: coloque o código aqui -->
+      </div>
+
+      <div class="inputs-grid">
+
+        <!-- CARD ELÉTRICO -->
+        <div class="card card--electric">
+          <div class="card-header">
+            <span class="card-icon">⚡</span>
+            <h2 class="card-title">Carro Elétrico</h2>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="precoEletrico">Preço do veículo</label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="precoEletrico" type="number" min="0" step="1000" value="250000" inputmode="numeric" aria-describedby="precoEletrico-hint" />
+            </div>
+            <span class="field-hint" id="precoEletrico-hint">Ex: BYD Dolphin ~R$ 160.000</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="precoEnergia">Preço da energia (kWh)</label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="precoEnergia" type="number" min="0" step="0.01" value="0.75" inputmode="decimal" />
+            </div>
+            <span class="field-hint">Tarifa residencial média BR ~R$ 0,75</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="consumoEletrico">Consumo médio (km/kWh)</label>
+            <div class="input-wrap">
+              <span class="input-suffix-inner">
+                <input class="input" id="consumoEletrico" type="number" min="1" step="0.1" value="6" inputmode="decimal" />
+                <span class="input-suffix">km/kWh</span>
+              </span>
+            </div>
+            <span class="field-hint">Média ~6 km/kWh</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="ipvaEletrico">IPVA anual (%)</label>
+            <div class="input-wrap">
+              <span class="input-suffix-inner">
+                <input class="input" id="ipvaEletrico" type="number" min="0" step="0.1" value="2" inputmode="decimal" />
+                <span class="input-suffix">%</span>
+              </span>
+            </div>
+            <span class="field-hint">Muitos estados têm isenção para elétricos</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="manutencaoEletrico">Manutenção anual</label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="manutencaoEletrico" type="number" min="0" step="100" value="1500" inputmode="numeric" />
+            </div>
+            <span class="field-hint">Elétricos têm ~50% menos manutenção</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="seguroEletrico">Seguro anual</label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="seguroEletrico" type="number" min="0" step="100" value="8000" inputmode="numeric" />
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD COMBUSTÃO -->
+        <div class="card card--combustion">
+          <div class="card-header">
+            <span class="card-icon">⛽</span>
+            <h2 class="card-title">Carro a Combustão</h2>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="precoCombustao">Preço do veículo</label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="precoCombustao" type="number" min="0" step="1000" value="130000" inputmode="numeric" aria-describedby="precoCombustao-hint" />
+            </div>
+            <span class="field-hint" id="precoCombustao-hint">Ex: Corolla ~R$ 135.000</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="precoCombustivel">Preço do combustível (litro)</label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="precoCombustivel" type="number" min="0" step="0.01" value="6.50" inputmode="decimal" />
+            </div>
+            <span class="field-hint">Gasolina comum ~R$ 6,20 (mai/2025)</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="consumoCombustao">Consumo médio (km/l)</label>
+            <div class="input-wrap">
+              <span class="input-suffix-inner">
+                <input class="input" id="consumoCombustao" type="number" min="1" step="0.5" value="12" inputmode="decimal" />
+                <span class="input-suffix">km/l</span>
+              </span>
+            </div>
+            <span class="field-hint">Média urbana ~12 km/l</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="ipvaCombustao">IPVA anual (%)</label>
+            <div class="input-wrap">
+              <span class="input-suffix-inner">
+                <input class="input" id="ipvaCombustao" type="number" min="0" step="0.1" value="4" inputmode="decimal" />
+                <span class="input-suffix">%</span>
+              </span>
+            </div>
+            <span class="field-hint">Varia por estado (SP = 4%)</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="manutencaoCombustao">Manutenção anual</label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="manutencaoCombustao" type="number" min="0" step="100" value="4000" inputmode="numeric" />
+            </div>
+            <span class="field-hint">Troca de óleo, filtros, etc.</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="seguroCombustao">Seguro anual</label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="seguroCombustao" type="number" min="0" step="100" value="5000" inputmode="numeric" />
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /inputs-grid -->
+
+      <!-- PARÂMETROS GERAIS -->
+      <div class="card card--params">
+        <div class="card-header">
+          <span class="card-icon">📐</span>
+          <h2 class="card-title">Parâmetros Gerais</h2>
+        </div>
+        <div class="params-grid">
+          <div class="field-group">
+            <label class="field-label" for="kmAno">Quilômetros por ano</label>
+            <div class="input-wrap">
+              <span class="input-suffix-inner">
+                <input class="input" id="kmAno" type="number" min="1000" step="1000" value="20000" inputmode="numeric" />
+                <span class="input-suffix">km/ano</span>
+              </span>
+            </div>
+            <span class="field-hint">Média BR ~15.000 km/ano</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="anos">Período de análise</label>
+            <div class="input-wrap">
+              <span class="input-suffix-inner">
+                <input class="input" id="anos" type="number" min="1" max="30" step="1" value="10" inputmode="numeric" />
+                <span class="input-suffix">anos</span>
+              </span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="inflacaoAnual">Inflação anual estimada</label>
+            <div class="input-wrap">
+              <span class="input-suffix-inner">
+                <input class="input" id="inflacaoAnual" type="number" min="0" step="0.5" value="5" inputmode="decimal" />
+                <span class="input-suffix">%</span>
+              </span>
+            </div>
+            <span class="field-hint">Afeta combustível e energia ao longo do tempo</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="depreciacao">Depreciação anual</label>
+            <div class="input-wrap">
+              <span class="input-suffix-inner">
+                <input class="input" id="depreciacao" type="number" min="0" step="1" value="10" inputmode="decimal" />
+                <span class="input-suffix">%</span>
+              </span>
+            </div>
+            <span class="field-hint">% do valor que o carro perde por ano</span>
+          </div>
+        </div>
+      </div>
+
+      <button id="calcularBtn" class="btn-calcular" aria-label="Calcular comparativo">
+        <span class="btn-icon">⚡</span> Calcular Comparativo
+      </button>
+
+    </section>
+
+    <!-- ===== TAB: RESULTADO ===== -->
+    <section id="tab-resultado" class="tab-panel" role="tabpanel" aria-labelledby="tab-resultado">
+
+      <div id="resultadoEmpty" class="empty-state">
+        <p class="empty-icon">📊</p>
+        <p>Preencha os dados e clique em <strong>Calcular Comparativo</strong> para ver os resultados.</p>
+      </div>
+
+      <div id="resultadoContent" class="resultado-content hidden">
+
+        <!-- VEREDITO -->
+        <div id="veredito" class="card card--veredito" role="region" aria-live="polite"></div>
+
+        <!-- MÉTRICAS -->
+        <h2 class="section-title">Métricas de Decisão</h2>
+        <div class="metrics-grid">
+          <div class="metric-card" id="metric-economia">
+            <span class="metric-label">Economia Total</span>
+            <span class="metric-value" id="val-economia">—</span>
+            <span class="metric-sub" id="sub-economia"></span>
+          </div>
+          <div class="metric-card" id="metric-payback">
+            <span class="metric-label">Payback</span>
+            <span class="metric-value" id="val-payback">—</span>
+            <span class="metric-sub" id="sub-payback"></span>
+          </div>
+          <div class="metric-card" id="metric-breakeven">
+            <span class="metric-label">Break-even</span>
+            <span class="metric-value" id="val-breakeven">—</span>
+            <span class="metric-sub" id="sub-breakeven"></span>
+          </div>
+          <div class="metric-card" id="metric-roi">
+            <span class="metric-label">ROI</span>
+            <span class="metric-value" id="val-roi">—</span>
+            <span class="metric-sub" id="sub-roi"></span>
+          </div>
+        </div>
+
+        <!-- ADSENSE SLOT RESULTADO -->
+        <div class="ad-slot" aria-label="Anúncio">
+          <!-- Google AdSense -->
+        </div>
+
+        <!-- RESUMO ANUAL -->
+        <h2 class="section-title">Custo Total no Período</h2>
+        <div class="total-comparison">
+          <div class="total-item total-item--electric">
+            <span class="total-label">⚡ Elétrico</span>
+            <span class="total-value" id="total-eletrico">—</span>
+          </div>
+          <div class="total-divider">vs</div>
+          <div class="total-item total-item--combustion">
+            <span class="total-label">⛽ Combustão</span>
+            <span class="total-value" id="total-combustao">—</span>
+          </div>
+        </div>
+
+        <!-- BREAKDOWN -->
+        <h2 class="section-title">Breakdown de Custos (por ano)</h2>
+        <div class="breakdown-table-wrap">
+          <table class="breakdown-table" aria-label="Breakdown de custos anuais">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>⚡ Elétrico</th>
+                <th>⛽ Combustão</th>
+                <th>Diferença</th>
+              </tr>
+            </thead>
+            <tbody id="breakdownBody"></tbody>
+          </table>
+        </div>
+
+        <button class="btn-share" id="btnShare" aria-label="Compartilhar resultado">
+          📤 Compartilhar Resultado
+        </button>
+
+      </div>
+    </section>
+
+    <!-- ===== TAB: GRÁFICOS ===== -->
+    <section id="tab-graficos" class="tab-panel" role="tabpanel" aria-labelledby="tab-graficos">
+
+      <div id="graficosEmpty" class="empty-state">
+        <p class="empty-icon">📈</p>
+        <p>Calcule primeiro para ver os gráficos.</p>
+      </div>
+
+      <div id="graficosContent" class="graficos-content hidden">
+
+        <h2 class="section-title">Evolução do Custo Total Acumulado</h2>
+        <p class="chart-desc">Acompanhe como o custo total de cada veículo evolui ao longo dos anos, incluindo a compra inicial.</p>
+        <div class="chart-container">
+          <canvas id="chartLinha" aria-label="Gráfico de linha: custo acumulado ao longo dos anos"></canvas>
+        </div>
+
+        <!-- ADSENSE SLOT GRÁFICOS -->
+        <div class="ad-slot" aria-label="Anúncio">
+          <!-- Google AdSense -->
+        </div>
+
+        <h2 class="section-title">Diferença Acumulada por Ano</h2>
+        <p class="chart-desc">Valores positivos indicam que o elétrico está compensando financeiramente.</p>
+        <div class="chart-container">
+          <canvas id="chartBarra" aria-label="Gráfico de barras: diferença acumulada por ano"></canvas>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SEO CONTENT -->
+  <section class="seo-section" aria-label="Informações sobre o comparativo">
+    <div class="container">
+      <h2>Por que comparar carro elétrico vs combustão?</h2>
+      <p>A decisão entre um <strong>carro elétrico</strong> e um <strong>carro a combustão</strong> vai muito além do preço de tabela. O <strong>custo total de propriedade (TCO)</strong> engloba combustível ou energia elétrica, manutenção, IPVA, seguro e depreciação — e pode revelar surpresas significativas.</p>
+      <div class="seo-grid">
+        <div class="seo-card">
+          <h3>⚡ Vantagens do Elétrico</h3>
+          <ul>
+            <li>Custo por km muito menor (energia elétrica vs combustível)</li>
+            <li>Manutenção reduzida (sem troca de óleo, menos peças móveis)</li>
+            <li>IPVA com isenção em vários estados</li>
+            <li>Menor emissão de CO₂</li>
+          </ul>
+        </div>
+        <div class="seo-card">
+          <h3>⛽ Vantagens do Combustão</h3>
+          <ul>
+            <li>Menor preço de compra inicial</li>
+            <li>Infraestrutura de abastecimento consolidada</li>
+            <li>Maior autonomia em longas viagens</li>
+            <li>Mercado de revenda mais maduro</li>
+          </ul>
+        </div>
+      </div>
+      <p>Use nosso simulador para descobrir o <strong>payback real</strong> do investimento adicional no elétrico, o <strong>break-even</strong> em quilômetros e anos, e o <strong>ROI</strong> da troca.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo-icon" aria-hidden="true">⚡</span>
+        <span class="footer-brand-name">Elétrico × Combustão</span>
+        <p class="footer-disclaimer">Este simulador é apenas uma estimativa. Consulte especialistas antes de tomar decisões financeiras. Os cálculos são baseados nos dados inseridos pelo usuário.</p>
+      </div>
+      <nav class="footer-links" aria-label="Links legais">
+        <a href="termos.html">Termos de Uso</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="cookies.html">Cookies</a>
+      </nav>
+      <p class="footer-copy">© 2025 carroeletricoxcombustao.com.br · Todos os direitos reservados</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
 </body>
 </html>

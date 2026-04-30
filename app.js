@@ -1,301 +1,558 @@
-import { calculateScenario, buildSensitivityScenario, formatCurrency, formatNumber, getDemoValues } from "./js/calculator.js";
-import { createCharts, updateCharts } from "./js/charts.js";
-import { createFipeService } from "./js/fipe.js";
+/**
+ * CARRO ELÉTRICO × COMBUSTÃO — app.js
+ * Simulador de Custo Total de Propriedade (TCO)
+ */
 
-const state = { ipvaRates: {}, depreciationProfiles: {}, charts: null, fipeSelections: { ev: {}, ice: {} } };
-const form = document.querySelector("#tcoForm");
-const siteHeading = document.querySelector("header h1");
-const themeToggle = document.querySelector("#themeToggle");
-const loadDemoBtn = document.querySelector("#loadDemoBtn");
-const resetBtn = document.querySelector("#resetBtn");
-const clearFipeBtn = document.querySelector("#clearFipeBtn");
-const tableBody = document.querySelector("#summaryTableBody");
-const fipeStatus = document.querySelector("#fipeStatus");
-const htmlRoot = document.documentElement;
-const fipeService = createFipeService();
+'use strict';
 
-const kpis = {
-  savings: document.querySelector("#kpiSavings"),
-  payback: document.querySelector("#kpiPayback"),
-  breakEven: document.querySelector("#kpiBreakEven"),
-  roi: document.querySelector("#kpiRoi"),
-  co2: document.querySelector("#kpiCo2"),
-  ipva: document.querySelector("#kpiIpva")
-};
+// ──────────────────────────────────────────────
+// COOKIE BANNER
+// ──────────────────────────────────────────────
+(function initCookieBanner() {
+  const banner = document.getElementById('cookieBanner');
+  const btn    = document.getElementById('acceptCookies');
+  if (!banner || !btn) return;
 
-const verdict = {
-  badge: document.querySelector("#verdictBadge"),
-  headline: document.querySelector("#verdictHeadline"),
-  body: document.querySelector("#verdictBody")
-};
-
-const sliderLabels = {
-  fuelIncrease: document.querySelector("#fuelIncreaseValue"),
-  energyIncrease: document.querySelector("#energyIncreaseValue"),
-  kmVariation: document.querySelector("#kmVariationValue")
-};
-
-async function bootstrap() {
-  document.title = "carroeletricoxcombustao.com.br | Simulador TCO, FIPE e Payback";
-  if (siteHeading) {
-    siteHeading.textContent = "Carro Elétrico x Combustão";
+  if (localStorage.getItem('cookieAccepted') === '1') {
+    banner.classList.add('hidden');
   }
 
-  const [ipvaRates, depreciationProfiles] = await Promise.all([
-    fetch("./data/ipva-rates.json").then((response) => response.json()),
-    fetch("./data/depreciation-rates.json").then((response) => response.json())
-  ]);
-  state.ipvaRates = ipvaRates.states;
-  state.depreciationProfiles = depreciationProfiles;
-  populateStateSelect();
-  bindEvents();
-  await Promise.all([populateBrandOptions("ev"), populateBrandOptions("ice")]);
-  state.charts = createCharts({
-    costEvolutionCtx: document.querySelector("#costEvolutionChart"),
-    breakEvenCtx: document.querySelector("#breakEvenChart"),
-    evBreakdownCtx: document.querySelector("#evBreakdownChart"),
-    iceBreakdownCtx: document.querySelector("#iceBreakdownChart"),
-    fipeHistoryCtx: document.querySelector("#fipeHistoryChart")
+  btn.addEventListener('click', () => {
+    localStorage.setItem('cookieAccepted', '1');
+    banner.classList.add('hidden');
   });
-  if (localStorage.getItem("theme") === "light") {
-    htmlRoot.classList.remove("dark");
-    htmlRoot.classList.add("light");
-  }
-  syncThemeButton();
-  runCalculation();
-}
+})();
 
-function bindEvents() {
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    runCalculation();
-  });
+// ──────────────────────────────────────────────
+// TAB NAVIGATION
+// ──────────────────────────────────────────────
+(function initTabs() {
+  const buttons = document.querySelectorAll('.tab-btn');
+  const panels  = document.querySelectorAll('.tab-panel');
 
-  form.addEventListener("input", (event) => {
-    if (event.target.name in sliderLabels) sliderLabels[event.target.name].textContent = `${event.target.value}%`;
-    runCalculation();
-  });
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
 
-  loadDemoBtn.addEventListener("click", () => {
-    Object.entries(getDemoValues()).forEach(([key, value]) => {
-      const field = form.elements.namedItem(key);
-      if (field) field.value = value;
-    });
-    runCalculation();
-  });
+      // Update buttons
+      buttons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
 
-  resetBtn.addEventListener("click", () => {
-    form.reset();
-    form.elements.namedItem("state").value = "SP";
-    sliderLabels.fuelIncrease.textContent = "15%";
-    sliderLabels.energyIncrease.textContent = "8%";
-    sliderLabels.kmVariation.textContent = "10%";
-    runCalculation();
-  });
-
-  themeToggle.addEventListener("click", () => {
-    htmlRoot.classList.toggle("light");
-    htmlRoot.classList.toggle("dark");
-    localStorage.setItem("theme", htmlRoot.classList.contains("light") ? "light" : "dark");
-    syncThemeButton();
-  });
-
-  clearFipeBtn.addEventListener("click", () => {
-    state.fipeSelections = { ev: {}, ice: {} };
-    fipeStatus.textContent = "Consulta FIPE limpa. Os preços manuais continuam valendo.";
-    runCalculation();
-  });
-
-  document.querySelectorAll("[data-role='load-fipe']").forEach((button) => {
-    button.addEventListener("click", async () => {
-      await loadSelectedFipeVehicle(button.dataset.vehicle);
+      // Update panels
+      panels.forEach(p => p.classList.remove('active'));
+      const targetPanel = document.getElementById('tab-' + target);
+      if (targetPanel) targetPanel.classList.add('active');
     });
   });
+})();
 
-  document.querySelectorAll("[data-fipe='vehicleType']").forEach((select) => {
-    select.addEventListener("change", async (event) => populateBrandOptions(event.target.dataset.vehicle));
-  });
-  document.querySelectorAll("[data-fipe='brand']").forEach((select) => {
-    select.addEventListener("change", async (event) => populateModelOptions(event.target.dataset.vehicle));
-  });
-  document.querySelectorAll("[data-fipe='model']").forEach((select) => {
-    select.addEventListener("change", async (event) => populateYearOptions(event.target.dataset.vehicle));
-  });
+// ──────────────────────────────────────────────
+// CHART INSTANCES (stored so we can destroy/re-create)
+// ──────────────────────────────────────────────
+let chartLinha = null;
+let chartBarra = null;
+
+// ──────────────────────────────────────────────
+// UTILS
+// ──────────────────────────────────────────────
+
+/** Format BRL currency */
+function brl(value) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
 }
 
-function populateStateSelect() {
-  const select = form.elements.namedItem("state");
-  select.innerHTML = "";
-  Object.entries(state.ipvaRates).forEach(([code, config]) => {
-    const option = document.createElement("option");
-    option.value = code;
-    option.textContent = `${config.name} (${config.evRateLabel} EV / ${config.iceRateLabel} ICE)`;
-    select.appendChild(option);
-  });
-  select.value = "SP";
+/** Format percentage */
+function pct(value) {
+  return (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
 }
 
-async function populateBrandOptions(vehicleKey) {
-  const vehicleType = getFipeElement(vehicleKey, "vehicleType").value;
-  const brandSelect = getFipeElement(vehicleKey, "brand");
-  const modelSelect = getFipeElement(vehicleKey, "model");
-  const yearSelect = getFipeElement(vehicleKey, "year");
-  setSelectLoading(brandSelect, "Carregando marcas...");
-  setSelectLoading(modelSelect, "Selecione a marca");
-  setSelectLoading(yearSelect, "Selecione o modelo");
-  try {
-    const brands = await fipeService.getBrands(vehicleType);
-    fillSelect(brandSelect, brands, "Escolha uma marca");
-    if (brands[0]) {
-      brandSelect.value = brands[0].codigo;
-      await populateModelOptions(vehicleKey);
-    }
-  } catch (error) {
-    setSelectLoading(brandSelect, "API indisponível");
-    fipeStatus.textContent = `Não foi possível carregar marcas FIPE agora. ${error.message}`;
+/** Get float from input field */
+function getVal(id) {
+  const el = document.getElementById(id);
+  const v  = parseFloat(el ? el.value.replace(',', '.') : '0');
+  return isNaN(v) ? 0 : v;
+}
+
+// ──────────────────────────────────────────────
+// CORE TCO CALCULATION
+// ──────────────────────────────────────────────
+
+/**
+ * Calculate cumulative TCO arrays for each year.
+ * Returns {eletrico: [], combustao: [], labels: []}
+ */
+function calcTCO() {
+  // Inputs
+  const precoElet    = getVal('precoEletrico');
+  const precoComb    = getVal('precoCombustao');
+  const kmAno        = getVal('kmAno');
+  const anos         = Math.max(1, Math.min(30, Math.round(getVal('anos'))));
+  const inflacao     = getVal('inflacaoAnual') / 100;  // anual
+  const depreciacaoPct = getVal('depreciacao') / 100;
+
+  // Elétrico
+  const precoEnergia       = getVal('precoEnergia');
+  const consumoElet        = getVal('consumoEletrico');  // km/kWh
+  const ipvaEletPct        = getVal('ipvaEletrico') / 100;
+  const manutElet          = getVal('manutencaoEletrico');
+  const seguroElet         = getVal('seguroEletrico');
+
+  // Combustão
+  const precoCombustivel   = getVal('precoCombustivel');
+  const consumoComb        = getVal('consumoCombustao');  // km/l
+  const ipvaCombPct        = getVal('ipvaCombustao') / 100;
+  const manutComb          = getVal('manutencaoCombustao');
+  const seguroComb         = getVal('seguroCombustao');
+
+  const labels      = [];
+  const cumulElet   = [];
+  const cumulComb   = [];
+  const diffAcum    = [];  // positivo = elétrico vantagem
+
+  let totalElet = precoElet;
+  let totalComb = precoComb;
+
+  // Valor atual dos veículos para IPVA (deprecia anualmente)
+  let valorElet = precoElet;
+  let valorComb = precoComb;
+
+  for (let ano = 1; ano <= anos; ano++) {
+    // Fator de inflação acumulada para preços variáveis
+    const infFator = Math.pow(1 + inflacao, ano - 1);
+
+    // Depreciação no início do ano (para IPVA base)
+    valorElet = valorElet * (1 - depreciacaoPct);
+    valorComb = valorComb * (1 - depreciacaoPct);
+
+    // ── Custos anuais elétrico ──
+    const energiaCusto   = (kmAno / consumoElet) * (precoEnergia * infFator);
+    const ipvaEletAnual  = valorElet * ipvaEletPct;
+    const manutEletAnual = manutElet * infFator;
+    const seguroEletAnual= seguroElet * infFator;
+    const custoEletAnual = energiaCusto + ipvaEletAnual + manutEletAnual + seguroEletAnual;
+
+    // ── Custos anuais combustão ──
+    const combustivelCusto = (kmAno / consumoComb) * (precoCombustivel * infFator);
+    const ipvaCombAnual    = valorComb * ipvaCombPct;
+    const manutCombAnual   = manutComb * infFator;
+    const seguroCombAnual  = seguroComb * infFator;
+    const custoCombAnual   = combustivelCusto + ipvaCombAnual + manutCombAnual + seguroCombAnual;
+
+    totalElet += custoEletAnual;
+    totalComb += custoCombAnual;
+
+    labels.push(`Ano ${ano}`);
+    cumulElet.push(Math.round(totalElet));
+    cumulComb.push(Math.round(totalComb));
+    diffAcum.push(Math.round(totalComb - totalElet));  // positivo = eletrico melhor
+  }
+
+  // ── Breakdown (ano 1 para referência) ──
+  const infFator1 = Math.pow(1 + inflacao, 0);
+  const valorElet1 = precoElet * (1 - depreciacaoPct);
+  const valorComb1 = precoComb * (1 - depreciacaoPct);
+
+  const breakdown = {
+    energia:    Math.round((kmAno / consumoElet) * (precoEnergia * infFator1)),
+    ipvaElet:   Math.round(valorElet1 * ipvaEletPct),
+    manutElet:  Math.round(manutElet),
+    seguroElet: Math.round(seguroElet),
+    combustivel:Math.round((kmAno / consumoComb) * (precoCombustivel * infFator1)),
+    ipvaComb:   Math.round(valorComb1 * ipvaCombPct),
+    manutComb:  Math.round(manutComb),
+    seguroComb: Math.round(seguroComb),
+  };
+
+  // ── Break-even (ano em que elétrico passa a ser mais barato acumulado) ──
+  let breakEvenAno = null;
+  for (let i = 0; i < diffAcum.length; i++) {
+    if (diffAcum[i] > 0) { breakEvenAno = i + 1; break; }
+  }
+
+  // ── Métricas ──
+  const economiaTotal  = cumulComb[anos - 1] - cumulElet[anos - 1];
+  const investExtra    = Math.max(0, precoElet - precoComb);
+  const roi            = investExtra > 0 ? (economiaTotal / investExtra) * 100 : null;
+
+  // Payback: ano em que economia supera investimento extra
+  let paybackAno = null;
+  for (let i = 0; i < diffAcum.length; i++) {
+    if (diffAcum[i] >= investExtra) { paybackAno = i + 1; break; }
+  }
+
+  return {
+    anos, labels, cumulElet, cumulComb, diffAcum,
+    economiaTotal, breakEvenAno, paybackAno, roi,
+    precoElet, precoComb, investExtra,
+    breakdown,
+    totalElet: cumulElet[anos - 1],
+    totalComb: cumulComb[anos - 1],
+  };
+}
+
+// ──────────────────────────────────────────────
+// RENDER RESULTS
+// ──────────────────────────────────────────────
+
+function renderVeredito(data) {
+  const { economiaTotal, paybackAno, anos, roi } = data;
+  const card = document.getElementById('veredito');
+
+  let icon, title, desc, cls;
+
+  if (economiaTotal > 5000) {
+    icon  = '⚡';
+    cls   = 'v-electric';
+    title = 'Elétrico compensa!';
+    desc  = `No período de ${anos} anos, o carro elétrico gera uma economia de <strong>${brl(economiaTotal)}</strong> frente ao combustão. ${paybackAno ? `O investimento se paga em ${paybackAno} ${paybackAno === 1 ? 'ano' : 'anos'}.` : 'O payback ocorre além do período analisado.'}`;
+  } else if (economiaTotal < -5000) {
+    icon  = '⛽';
+    cls   = 'v-combustion';
+    title = 'Combustão compensa mais';
+    desc  = `No cenário simulado, o carro a combustão sai ${brl(Math.abs(economiaTotal))} mais barato no período de ${anos} anos. Considere aumentar a quilometragem ou o período de análise.`;
+  } else {
+    icon  = '⚖️';
+    cls   = 'v-tie';
+    title = 'Empate técnico';
+    desc  = `A diferença entre os dois no período de ${anos} anos é de apenas ${brl(Math.abs(economiaTotal))}. Fatores como autonomia, conforto e conveniência podem ser decisivos.`;
+  }
+
+  card.className = `card card--veredito ${cls}`;
+  card.innerHTML = `
+    <span class="veredito-icon">${icon}</span>
+    <div class="veredito-title">${title}</div>
+    <p class="veredito-desc">${desc}</p>
+  `;
+}
+
+function renderMetrics(data) {
+  const { economiaTotal, paybackAno, breakEvenAno, roi, anos } = data;
+
+  // Economia
+  const elEcon = document.getElementById('val-economia');
+  const subEcon = document.getElementById('sub-economia');
+  const mEcon   = document.getElementById('metric-economia');
+  elEcon.textContent = brl(Math.abs(economiaTotal));
+  subEcon.textContent = economiaTotal >= 0 ? 'a favor do elétrico' : 'a favor do combustão';
+  mEcon.className = 'metric-card ' + (economiaTotal >= 0 ? 'positive' : 'negative');
+
+  // Payback
+  const elPay   = document.getElementById('val-payback');
+  const subPay  = document.getElementById('sub-payback');
+  const mPay    = document.getElementById('metric-payback');
+  if (paybackAno) {
+    elPay.textContent  = `${paybackAno} ${paybackAno === 1 ? 'ano' : 'anos'}`;
+    subPay.textContent = 'para recuperar o investimento extra';
+    mPay.className = 'metric-card positive';
+  } else if (data.investExtra <= 0) {
+    elPay.textContent  = 'Imediato';
+    subPay.textContent = 'elétrico já custa menos';
+    mPay.className = 'metric-card positive';
+  } else {
+    elPay.textContent  = `> ${anos} anos`;
+    subPay.textContent = 'além do período analisado';
+    mPay.className = 'metric-card negative';
+  }
+
+  // Break-even
+  const elBe   = document.getElementById('val-breakeven');
+  const subBe  = document.getElementById('sub-breakeven');
+  const mBe    = document.getElementById('metric-breakeven');
+  if (breakEvenAno) {
+    elBe.textContent  = `Ano ${breakEvenAno}`;
+    subBe.textContent = 'elétrico passa a custar menos acumulado';
+    mBe.className = 'metric-card positive';
+  } else if (data.cumulElet[0] <= data.cumulComb[0]) {
+    elBe.textContent  = 'Já no ano 1';
+    subBe.textContent = 'elétrico já é mais barato';
+    mBe.className = 'metric-card positive';
+  } else {
+    elBe.textContent  = `> ${anos} anos`;
+    subBe.textContent = 'elétrico não alcança no período';
+    mBe.className = 'metric-card negative';
+  }
+
+  // ROI
+  const elRoi  = document.getElementById('val-roi');
+  const subRoi = document.getElementById('sub-roi');
+  const mRoi   = document.getElementById('metric-roi');
+  if (roi !== null) {
+    elRoi.textContent  = pct(roi);
+    subRoi.textContent = `sobre o investimento extra de ${brl(data.investExtra)}`;
+    mRoi.className = 'metric-card ' + (roi >= 0 ? 'positive' : 'negative');
+  } else {
+    elRoi.textContent  = 'N/A';
+    subRoi.textContent = 'preços de compra iguais';
+    mRoi.className = 'metric-card neutral';
   }
 }
 
-async function populateModelOptions(vehicleKey) {
-  const vehicleType = getFipeElement(vehicleKey, "vehicleType").value;
-  const brandCode = getFipeElement(vehicleKey, "brand").value;
-  const modelSelect = getFipeElement(vehicleKey, "model");
-  const yearSelect = getFipeElement(vehicleKey, "year");
-  if (!brandCode) return;
-  setSelectLoading(modelSelect, "Carregando modelos...");
-  setSelectLoading(yearSelect, "Selecione o modelo");
-  try {
-    const response = await fipeService.getModels(vehicleType, brandCode);
-    fillSelect(modelSelect, response.modelos, "Escolha um modelo");
-    if (response.modelos[0]) {
-      modelSelect.value = response.modelos[0].codigo;
-      await populateYearOptions(vehicleKey);
-    }
-  } catch (error) {
-    setSelectLoading(modelSelect, "API indisponível");
-    fipeStatus.textContent = `Não foi possível carregar modelos FIPE agora. ${error.message}`;
-  }
+function renderTotais(data) {
+  document.getElementById('total-eletrico').textContent  = brl(data.totalElet);
+  document.getElementById('total-combustao').textContent = brl(data.totalComb);
 }
 
-async function populateYearOptions(vehicleKey) {
-  const vehicleType = getFipeElement(vehicleKey, "vehicleType").value;
-  const brandCode = getFipeElement(vehicleKey, "brand").value;
-  const modelCode = getFipeElement(vehicleKey, "model").value;
-  const yearSelect = getFipeElement(vehicleKey, "year");
-  if (!brandCode || !modelCode) return;
-  setSelectLoading(yearSelect, "Carregando anos...");
-  try {
-    const years = await fipeService.getYears(vehicleType, brandCode, modelCode);
-    fillSelect(yearSelect, years, "Escolha o ano");
-    if (years[0]) yearSelect.value = years[0].codigo;
-  } catch (error) {
-    setSelectLoading(yearSelect, "API indisponível");
-    fipeStatus.textContent = `Não foi possível carregar anos FIPE agora. ${error.message}`;
-  }
+function renderBreakdown(data) {
+  const { breakdown } = data;
+
+  const rows = [
+    {
+      label: '🛒 Compra do veículo',
+      e: data.precoElet, c: data.precoComb,
+    },
+    {
+      label: '⚡/⛽ Energia/Combustível (ano 1)',
+      e: breakdown.energia, c: breakdown.combustivel,
+    },
+    {
+      label: '🏛️ IPVA (ano 1)',
+      e: breakdown.ipvaElet, c: breakdown.ipvaComb,
+    },
+    {
+      label: '🔧 Manutenção (ano 1)',
+      e: breakdown.manutElet, c: breakdown.manutComb,
+    },
+    {
+      label: '🛡️ Seguro (ano 1)',
+      e: breakdown.seguroElet, c: breakdown.seguroComb,
+    },
+  ];
+
+  const tbody = document.getElementById('breakdownBody');
+  tbody.innerHTML = rows.map(row => {
+    const diff = row.c - row.e;
+    const cls  = diff > 0 ? 'td-positive' : diff < 0 ? 'td-negative' : '';
+    return `<tr>
+      <td>${row.label}</td>
+      <td>${brl(row.e)}</td>
+      <td>${brl(row.c)}</td>
+      <td class="${cls}">${diff >= 0 ? '+' : ''}${brl(diff)}</td>
+    </tr>`;
+  }).join('');
 }
 
-async function loadSelectedFipeVehicle(vehicleKey) {
-  const vehicleType = getFipeElement(vehicleKey, "vehicleType").value;
-  const brandCode = getFipeElement(vehicleKey, "brand").value;
-  const modelCode = getFipeElement(vehicleKey, "model").value;
-  const yearCode = getFipeElement(vehicleKey, "year").value;
-  if (!brandCode || !modelCode || !yearCode) {
-    fipeStatus.textContent = "Selecione marca, modelo e ano antes de buscar a FIPE.";
+// ──────────────────────────────────────────────
+// CHARTS
+// ──────────────────────────────────────────────
+
+function renderCharts(data) {
+  const { labels, cumulElet, cumulComb, diffAcum } = data;
+
+  const fontFamily = 'DM Mono, monospace';
+  const gridColor  = 'rgba(30,45,61,0.8)';
+  const textColor  = '#6a8099';
+
+  // Destroy old instances
+  if (chartLinha) { chartLinha.destroy(); chartLinha = null; }
+  if (chartBarra) { chartBarra.destroy(); chartBarra = null; }
+
+  // ── LINHA: custo acumulado ──
+  const ctxLinha = document.getElementById('chartLinha').getContext('2d');
+  chartLinha = new Chart(ctxLinha, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '⚡ Elétrico',
+          data: cumulElet,
+          borderColor: '#00e57a',
+          backgroundColor: 'rgba(0,229,122,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointBackgroundColor: '#00e57a',
+          fill: true,
+          tension: 0.35,
+        },
+        {
+          label: '⛽ Combustão',
+          data: cumulComb,
+          borderColor: '#ff6b35',
+          backgroundColor: 'rgba(255,107,53,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointBackgroundColor: '#ff6b35',
+          fill: true,
+          tension: 0.35,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+            font: { family: fontFamily, size: 12 },
+            boxWidth: 12, boxHeight: 12,
+          },
+        },
+        tooltip: {
+          backgroundColor: '#0e1318',
+          borderColor: '#1e2d3d',
+          borderWidth: 1,
+          titleFont: { family: fontFamily },
+          bodyFont: { family: fontFamily },
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${brl(ctx.parsed.y)}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: textColor, font: { family: fontFamily, size: 11 }, maxTicksLimit: 10 },
+          grid: { color: gridColor },
+        },
+        y: {
+          ticks: {
+            color: textColor,
+            font: { family: fontFamily, size: 11 },
+            callback: v => 'R$' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v),
+          },
+          grid: { color: gridColor },
+        },
+      },
+    },
+  });
+
+  // ── BARRA: diferença acumulada ──
+  const ctxBarra = document.getElementById('chartBarra').getContext('2d');
+  chartBarra = new Chart(ctxBarra, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Diferença Acumulada (Combustão − Elétrico)',
+          data: diffAcum,
+          backgroundColor: diffAcum.map(v => v >= 0 ? 'rgba(0,229,122,0.6)' : 'rgba(255,107,53,0.6)'),
+          borderColor:      diffAcum.map(v => v >= 0 ? '#00e57a' : '#ff6b35'),
+          borderWidth: 1,
+          borderRadius: 4,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+            font: { family: fontFamily, size: 12 },
+            boxWidth: 12, boxHeight: 12,
+          },
+        },
+        tooltip: {
+          backgroundColor: '#0e1318',
+          borderColor: '#1e2d3d',
+          borderWidth: 1,
+          titleFont: { family: fontFamily },
+          bodyFont: { family: fontFamily },
+          callbacks: {
+            label: ctx => {
+              const v = ctx.parsed.y;
+              return ` ${v >= 0 ? 'Elétrico economiza' : 'Combustão economiza'} ${brl(Math.abs(v))}`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: textColor, font: { family: fontFamily, size: 11 }, maxTicksLimit: 10 },
+          grid: { color: gridColor },
+        },
+        y: {
+          ticks: {
+            color: textColor,
+            font: { family: fontFamily, size: 11 },
+            callback: v => (v >= 0 ? '+' : '') + 'R$' + (Math.abs(v) >= 1000 ? (v / 1000).toFixed(0) + 'k' : v),
+          },
+          grid: { color: gridColor },
+        },
+      },
+    },
+  });
+}
+
+// ──────────────────────────────────────────────
+// MAIN: CALCULATE
+// ──────────────────────────────────────────────
+
+function calcular() {
+  // Wait for Chart.js to load
+  if (typeof Chart === 'undefined') {
+    alert('Aguarde o carregamento completo da página e tente novamente.');
     return;
   }
-  try {
-    const result = await fipeService.getVehicle(vehicleType, brandCode, modelCode, yearCode);
-    const priceField = form.elements.namedItem(vehicleKey === "ev" ? "evPrice" : "icePrice");
-    priceField.value = result.valorNumerico.toFixed(2);
-    const profile = vehicleKey === "ev" ? state.depreciationProfiles.electric : state.depreciationProfiles.combustion;
-    const history = await fipeService.getVehicleHistory({ vehicleType, brandCode, modelCode, yearCode, currentValue: result.valorNumerico, profile });
-    state.fipeSelections[vehicleKey] = { label: `${result.Marca} ${result.Modelo}`, value: result.valorNumerico, month: result.MesReferencia, history, estimatedDepreciation: fipeService.estimateDepreciation(history) };
-    fipeStatus.textContent = `${state.fipeSelections.ev.label ? `Elétrico sincronizado em ${formatCurrency(state.fipeSelections.ev.value)}. ` : ""}${state.fipeSelections.ice.label ? `Combustão sincronizado em ${formatCurrency(state.fipeSelections.ice.value)}.` : ""}`;
-    runCalculation();
-  } catch (error) {
-    fipeStatus.textContent = `Falha ao consultar FIPE: ${error.message}`;
+
+  const data = calcTCO();
+
+  // Show results
+  document.getElementById('resultadoEmpty').classList.add('hidden');
+  document.getElementById('resultadoContent').classList.remove('hidden');
+  document.getElementById('graficosEmpty').classList.add('hidden');
+  document.getElementById('graficosContent').classList.remove('hidden');
+
+  // Render
+  renderVeredito(data);
+  renderMetrics(data);
+  renderTotais(data);
+  renderBreakdown(data);
+  renderCharts(data);
+
+  // Switch to result tab
+  document.querySelector('[data-tab="resultado"]').click();
+
+  // Scroll to top of results
+  setTimeout(() => {
+    document.getElementById('tab-resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ──────────────────────────────────────────────
+// SHARE
+// ──────────────────────────────────────────────
+
+function shareResult() {
+  const data = calcTCO();
+  const msg  = `🚗 Simulei no carroeletricoxcombustao.com.br:\n`
+             + `⚡ Custo total elétrico: ${brl(data.totalElet)}\n`
+             + `⛽ Custo total combustão: ${brl(data.totalComb)}\n`
+             + `💰 Economia: ${brl(Math.abs(data.economiaTotal))}\n`
+             + `https://carroeletricoxcombustao.com.br`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'Elétrico × Combustão — Resultado', text: msg })
+      .catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(msg).then(() => {
+      const btn = document.getElementById('btnShare');
+      const orig = btn.textContent;
+      btn.textContent = '✅ Copiado!';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
   }
 }
 
-function getFormValues() {
-  return Object.fromEntries(new FormData(form).entries());
-}
+// ──────────────────────────────────────────────
+// EVENT LISTENERS
+// ──────────────────────────────────────────────
 
-function runCalculation() {
-  const values = getFormValues();
-  const result = calculateScenario({ rawValues: values, ipvaRates: state.ipvaRates, fipeSelections: state.fipeSelections });
-  const sensitivity = buildSensitivityScenario(result.baseInputs, { fuelIncreasePct: Number(values.fuelIncrease || 0), energyIncreasePct: Number(values.energyIncrease || 0), kmVariationPct: Number(values.kmVariation || 0) });
-  renderSummary(result);
-  if (state.charts) {
-    updateCharts(state.charts, { ...result, sensitivity, fipeSelections: state.fipeSelections });
-  }
-}
+document.addEventListener('DOMContentLoaded', () => {
+  const calcBtn  = document.getElementById('calcularBtn');
+  const shareBtn = document.getElementById('btnShare');
 
-function renderSummary(result) {
-  kpis.savings.textContent = formatCurrency(result.horizons[10].difference);
-  kpis.payback.textContent = result.paybackYears ? `${formatNumber(result.paybackYears, 1)} anos` : "Sem payback";
-  kpis.breakEven.textContent = result.breakEvenYear ? `Ano ${formatNumber(result.breakEvenYear, 1)}` : "Não atingido";
-  kpis.roi.textContent = `${formatNumber(result.roiPercent, 1)}%`;
-  kpis.co2.textContent = `${formatNumber(result.co2AvoidedKg10y, 0)} kg`;
-  kpis.ipva.textContent = `${formatCurrency(result.annualBreakdown.ev.ipva)} vs ${formatCurrency(result.annualBreakdown.ice.ipva)}`;
-  tableBody.innerHTML = "";
-  [1, 5, 10].forEach((year) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `<td>${year} ano${year > 1 ? "s" : ""}</td><td>${formatCurrency(result.horizons[year].ev)}</td><td>${formatCurrency(result.horizons[year].ice)}</td><td class="${result.horizons[year].difference >= 0 ? "positive" : "negative"}">${formatCurrency(result.horizons[year].difference)}</td>`;
-    tableBody.appendChild(row);
+  if (calcBtn)  calcBtn.addEventListener('click', calcular);
+  if (shareBtn) shareBtn.addEventListener('click', shareResult);
+
+  // Allow Enter key on inputs to trigger calculation
+  document.querySelectorAll('.input').forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') calcular();
+    });
   });
-  renderVerdict(result);
-}
-
-function getFipeElement(vehicleKey, field) {
-  return document.querySelector(`[data-fipe='${field}'][data-vehicle='${vehicleKey}']`);
-}
-
-function setSelectLoading(select, text) {
-  select.innerHTML = `<option value="">${text}</option>`;
-}
-
-function fillSelect(select, items, placeholder) {
-  select.innerHTML = `<option value="">${placeholder}</option>`;
-  items.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.codigo;
-    option.textContent = item.nome;
-    select.appendChild(option);
-  });
-}
-
-function renderVerdict(result) {
-  const difference10y = result.horizons[10].difference;
-  const evWins = difference10y > 0;
-  const tie = Math.abs(difference10y) < 1;
-
-  if (tie) {
-    verdict.badge.textContent = "Empate técnico";
-    verdict.headline.textContent = "Os dois carros empatam no horizonte de 10 anos.";
-    verdict.body.textContent = "Nesse cenário, a decisão depende mais de preferência de uso, recarga, conforto e perfil de manutenção do que de custo total.";
-    return;
-  }
-
-  if (evWins) {
-    verdict.badge.textContent = "Vencedor: Elétrico";
-    verdict.headline.textContent = `O carro elétrico vence por ${formatCurrency(difference10y)} em 10 anos.`;
-    verdict.body.textContent = result.breakEvenYear
-      ? `Mesmo com investimento inicial maior, ele recupera a diferença até o ano ${formatNumber(result.breakEvenYear, 1)} e depois amplia a economia com energia, manutenção e emissões menores.`
-      : "Ele já fecha o horizonte analisado com custo total inferior, sustentado principalmente por energia e manutenção mais baratas.";
-    return;
-  }
-
-  verdict.badge.textContent = "Vencedor: Combustão";
-  verdict.headline.textContent = `O carro a combustão vence por ${formatCurrency(Math.abs(difference10y))} em 10 anos.`;
-  verdict.body.textContent = result.breakEvenYear
-    ? `Apesar de existir ponto de equilíbrio ao longo da curva, o cenário final ainda favorece a combustão por causa do investimento inicial e dos custos assumidos nesta simulação.`
-    : "No cenário atual, o elétrico não recupera o investimento inicial dentro de 10 anos, então o carro a combustão mantém o menor custo total.";
-}
-
-function syncThemeButton() {
-  const isLight = htmlRoot.classList.contains("light");
-  themeToggle.setAttribute("aria-pressed", String(isLight));
-}
-
-bootstrap();
+});

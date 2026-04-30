@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /termos.html
+Disallow: /privacidade.html
+Disallow: /cookies.html
 
 Sitemap: https://carroeletricoxcombustao.com.br/sitemap.xml
